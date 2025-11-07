@@ -1,0 +1,1088 @@
+/* ===== RESET GENERAL ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== ESTILOS GLOBALES ===== */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1;
+    background: #f5f6fa;
+    color: #333;
+}
+
+/* ===== HEADER (ORIGINAL) ===== */
+header {
+    background: #0077cc;
+    color: white;
+    padding: 15px 2px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    width: 100%;
+}
+
+header .logo {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: auto;
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+header h1 { margin-bottom: 15px; }
+header h2 { margin: 0; }
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+header nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+header nav a:hover { color: #ffdd57; }
+
+/* ===== NAVBAR (ALIAS PARA REACT) ===== */
+.navbar-container { /* mismo estilo que header */
+    background: #0077cc;
+    color: white;
+    padding: 15px 2px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    width: 100%;
+}
+.navbar-container .logo {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: auto;
+}
+.navbar-container nav { display: flex; justify-content: center; width: 100%; }
+.navbar-container nav ul { list-style: none; display: flex; gap: 15px; }
+.navbar-container nav a {
+    text-decoration: none; color: white; font-weight: bold; font-size: 18px; transition: 0.3s;
+}
+.navbar-container nav a:hover { color: #ffdd57; }
+
+/* ===== HERO (BANNER PRINCIPAL) ===== */
+.hero { position: relative; text-align: center; color: black; }
+.hero-img { width: 100%; height: 100%; object-fit: contain; border-bottom: 5px solid #0077cc; }
+/* Soporte cuando en React usas <img/> sin clase */
+.hero img { width: 100%; height: 100%; object-fit: cover; border-bottom: 5px solid #0077cc; }
+
+.hero-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+.hero-text h2 { font-size: 2.5em; margin: 0; }
+.hero-text p { margin: 10px 0; font-size: 1.2em; }
+
+.btn-hero {
+    display: inline-block; background: #ffcc00; color: #333; padding: 12px 20px;
+    border-radius: 6px; text-decoration: none; font-weight: bold;
+}
+.btn-hero:hover { background: #ffaa00; }
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+main { padding: 30px; text-align: center; }
+
+/* ===== PRODUCTOS ===== */
+#productos, #listaProductos {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;
+}
+
+.producto {
+    background: white; padding: 15px; border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 220px; transition: transform 0.2s ease; text-align: center;
+}
+.producto:hover { transform: scale(1.05); }
+.producto img { border-radius: 5px; width: 100%; height: 180px; object-fit: cover; }
+.producto button {
+    margin-top: 10px; padding: 8px 12px; border: none; border-radius: 6px;
+    background: #0077cc; color: white; cursor: pointer; transition: 0.3s;
+}
+.producto button:hover { background: #005fa3; }
+
+/* Alias por si en algún lado usas .producto-card */
+.producto-card {
+    background: white; padding: 15px; border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 220px; transition: transform 0.2s ease; text-align: center;
+}
+
+/* ===== FORMULARIOS ===== */
+form {
+    display: flex; flex-direction: column; max-width: 400px; margin: auto; gap: 15px;
+}
+form input, form select, form textarea, form button { padding: 10px; font-size: 15px; }
+form button {
+    background: #0077cc; color: white; border: none; border-radius: 1px; cursor: pointer; transition: 0.3s;
+}
+form button:hover { background: #005fa3; }
+
+/* ===== TABLAS ADMIN ===== */
+table {
+    width: 100%; border-collapse: collapse; margin-top: 15px; background: white;
+}
+th, td { padding: 10px; border: 1px solid #ddd; }
+th { background: #0077cc; color: white; }
+td button { margin-right: 5px; padding: 5px 10px; font-size: 12px; }
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center; padding: 15px; background: #222; color: white; margin-top: 20px;
+}
+
+/* ===== ADMIN LAYOUT (ORIGINAL) ===== */
+.admin-layout { display: flex; }
+.sidebar {
+    width: 200px; background: #333; color: white; min-height: 100vh; padding: 15px;
+}
+.sidebar ul { list-style: none; padding: 0; }
+.sidebar li { margin: 15px 0; }
+.sidebar a { color: white; text-decoration: none; font-weight: bold; }
+.admin-content { flex: 1; padding: 20px; }
+
+/* ===== ADMIN (ALIAS PARA REACT) ===== */
+.admin-panel { padding: 20px; max-width: 1100px; margin: 0 auto; }
+.admin-form { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
+.admin-listas { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+/* ===== CARRITO ===== */
+#carrito { /* original */
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px; margin-top: 20px;
+}
+.carrito-item {
+    background: white; padding: 15px; border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center;
+}
+.carrito-item img { max-width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px; }
+
+/* Compatibilidad con tu Carrito en React */
+.carrito-container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.carrito-lista {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; margin-top: 20px;
+}
+.carrito-total { margin-top: 15px; }
+
+/* ===== DETALLE DE PRODUCTO (ORIGINAL) ===== */
+.detalle-card {
+    display: flex; flex-wrap: wrap; gap: 20px; background: #fff; padding: 20px;
+    border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 20px auto; max-width: 931px;
+}
+.detalle-img { flex: 1; text-align: center; background: #f9f9f9; border-radius: 10px; padding: 15px; }
+.detalle-img img { max-width: 100%; height: auto; border-radius: 8px; }
+.detalle-info {
+    flex: 0.8; display: flex; flex-direction: column; background: #fafafa; padding: 15px; border-radius: 10px;
+}
+.detalle-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 150px;
+}
+.detalle-header h3 { font-size: 2.5em; margin: 0; }
+.detalle-header .precio { font-size: 2.5em; color: #0077cc; font-weight: bold; }
+.detalle-info .descripcion { margin-bottom: 230px; line-height: 1.5; }
+.btn-carrito {
+    padding: 14px 24px; font-size: 16px; background: #28a745; color: white; border: none;
+    border-radius: 8px; cursor: pointer; transition: background 0.3s, transform 0.2s; margin-top: 10px;
+}
+.btn-carrito:hover { background: #218838; transform: scale(1.05); }
+.detalle-info input[type="number"] {
+    padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px;
+}
+
+/* Alias para tu componente React (.detalle-container) */
+.detalle-container { /* mismo look que .detalle-card */
+    display: flex; flex-wrap: wrap; gap: 20px; background: #fff; padding: 20px;
+    border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 20px auto; max-width: 950px;
+}
+.detalle-container img { max-width: 350px; border-radius: 10px; }
+.detalle-container .detalle-info { flex: 1; background: #fafafa; border-radius: 10px; padding: 15px; }
+
+/* ===== BLOG LISTA (ORIGINAL) ===== */
+.blog-lista {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px; margin: 20px auto; max-width: 1200px;
+}
+.blog-lista article {
+    background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 15px; text-align: center; transition: transform 0.2s ease;
+}
+.blog-lista article:hover { transform: scale(1.05); }
+.blog-lista img {
+    width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;
+}
+.blog-lista h4 { font-size: 1.2em; margin: 10px 0; }
+.blog-lista a { text-decoration: none; color: #0077cc; font-weight: bold; transition: 0.3s; }
+.blog-lista a:hover { color: #ffdd57; }
+
+/* Alias para Blogs en React */
+.blogs-container { padding: 10px; }
+.blogs-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px; margin: 20px auto; max-width: 1200px;
+}
+.blog-card {
+    background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 15px; text-align: center; transition: transform 0.2s ease;
+}
+.blog-card:hover { transform: scale(1.05); }
+.blog-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+
+/* ===== DASHBOARD CARDS ===== */
+.dashboard-cards {
+  display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap;
+}
+.card {
+  background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center; width: 250px;
+}
+.card h4 { margin-bottom: 10px; font-size: 1.4em; }
+.card p { font-size: 0.95em; margin-bottom: 15px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; }
+    nav ul { flex-direction: column; width: 100%; }
+    .admin-layout { flex-direction: column; }
+    .sidebar { width: 100%; }
+    .producto { width: 100%; max-width: 300px; }
+    .detalle-container { margin: 10px; }
+}
+/* ===== BUSCADOR Y FILTRO ===== */
+#productos-filtros {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#productos-filtros input,
+#productos-filtros select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+.mensaje-exito {
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  animation: fadeOut 2s ease forwards;
+}
+
+/* Animación para que el mensaje desaparezca suavemente */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* ======== CARRITO MEJORADO ======== */
+.carrito-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.carrito-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.carrito-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
+}
+
+.carrito-item img {
+  border-radius: 8px;
+  width: 90px;
+  height: auto;
+}
+
+.carrito-item h3 {
+  margin: 0;
+  color: #333;
+}
+
+.carrito-item p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.carrito-item button {
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.carrito-item button:hover {
+  background: #005fa3;
+}
+
+/* === BOTONES DE CANTIDAD === */
+.carrito-item div button:first-child,
+.carrito-item div button:last-child {
+  background: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+}
+
+.carrito-item div span {
+  display: inline-block;
+  min-width: 25px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.carrito-total {
+  text-align: right;
+  margin-top: 25px;
+}
+
+.carrito-total h3 {
+  font-size: 1.5rem;
+  color: #0077cc;
+}
+
+.carrito-total button {
+  margin-top: 10px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.carrito-total button:first-child {
+  background: #ff5555;
+  color: white;
+}
+
+.carrito-total button:first-child:hover {
+  background: #cc4444;
+}
+
+.carrito-total button:last-child {
+  background: #28a745;
+  color: white;
+}
+
+.carrito-total button:last-child:hover {
+  background: #218838;
+}
+.mensaje {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mensaje:has(> .error) {
+  color: red;
+}
+
+.mensaje:has(> .exito) {
+  color: green;
+}
+/* ===== OFERTAS ===== */
+.ofertas-container {
+  text-align: center;
+  padding: 30px;
+}
+
+.ofertas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.producto-oferta {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.producto-oferta:hover {
+  transform: scale(1.05);
+}
+
+.producto-oferta img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.precio-anterior {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 0.9em;
+}
+
+.precio-oferta {
+  color: #e63946;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.descuento {
+  color: #28a745;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.producto-oferta button {
+  background: #0077cc;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.producto-oferta button:hover {
+  background: #005fa3;
+}
+.admin-home {
+  text-align: center;
+  padding: 20px;
+}
+
+.admin-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.admin-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 230px;
+  text-align: center;
+  padding: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.admin-card-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.admin-card h3 {
+  margin: 10px 0 5px;
+  font-size: 1.2rem;
+}
+
+.btn-admin {
+  display: inline-block;
+  margin-top: 10px;
+  background: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn-admin:hover {
+  background: #0056b3;
+}
+
+/* Colores por tipo */
+.admin-card.productos { border-top: 5px solid #007bff; }
+.admin-card.usuarios { border-top: 5px solid #28a745; }
+.admin-card.ofertas { border-top: 5px solid #ffc107; }
+.admin-card.configuracion { border-top: 5px solid #fd7e14; }
+
+/* ===== IMÁGENES DEL PANEL DE ADMIN ===== */
+/* ✅ SOLO tablas: miniaturas (80x80) */
+.admin-content table img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+}
+
+/* ✅ Formulario de AdminProductos: vista previa grande */
+.admin-content .form-container img,
+.admin-content form img,
+.admin-producto-preview {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  display: block;
+  margin: 15px auto;
+}
+
+/* ===== ADMIN PANEL FIX ===== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Menú lateral */
+.sidebar {
+  width: 220px;
+  background: #111;
+  color: white;
+  padding: 20px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Contenido principal del admin */
+.admin-content {
+  flex: 1; /* 👈 Esto hace que ocupe todo el espacio disponible */
+  padding: 30px;
+  background: #f8f9fa;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Tarjetas dentro del admin */
+.admin-content .card {
+  border-radius: 12px;
+  border: none;
+}
+
+/* Formulario más ancho y centrado */
+.admin-content form .row {
+  align-items: end;
+}
+
+.admin-content .form-control,
+.admin-content .form-select {
+  min-height: 40px;
+  font-size: 0.95rem;
+}
+
+.admin-content button {
+  font-weight: 600;
+}
+
+/* Tabla adaptada */
+.admin-content table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.admin-content th {
+  background: #0077cc;
+  color: white;
+  text-align: center;
+}
+
+.admin-content td {
+  vertical-align: middle;
+}
+/* ===== AISLAMIENTO DEL TEMA OSCURO DEL ADMIN ===== */
+body:not(.admin-layout) {
+  background: #f5f6fa !important;
+  color: #333 !important;
+}
+
+/* El tema oscuro solo se aplica dentro del admin */
+body .admin-layout {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+}
+
+/* Asegura que las páginas normales NO hereden estilos oscuros */
+body:not(.admin-layout) .admin-content,
+body:not(.admin-layout) .sidebar {
+  background: transparent !important;
+  color: inherit !important;
+}
+/* ====== CORRECCIÓN DE CENTRADO PARA ADMINPRODUCTOS ====== */
+.container.mt-4 {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;          /* centra horizontalmente */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container.mt-4 h2 {
+  text-align: center;
+  width: 100%;
+}
+
+.container.mt-4 section.card {
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Formularios */
+.container.mt-4 form .row {
+  justify-content: center; /* centra las columnas */
+}
+.container.mt-4 .table-responsive {
+  width: 100%;
+}
+.container.mt-4 table {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+/* ===== Hacer sidebar fijo ===== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.sidebar {
+  position: fixed;          /* 🔹 Fija el menú */
+  left: 0;
+  top: 0;
+  height: 100vh;            /* Ocupa todo el alto visible */
+  width: 220px;             /* Mantiene su ancho */
+  background: #111;
+  color: white;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1000;            /* Se mantiene encima del contenido */
+}
+
+.admin-content {
+  flex: 1;
+  margin-left: 220px;       /* 🔹 Empuja el contenido a la derecha del menú */
+  padding: 30px;
+  background: #2c2c2c;
+  color: #f1f1f1;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.navbar {
+  background: transparent;
+  color: white;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.navbar a { color: white; }
+.hero img { filter: brightness(0.5); }
+.btn-hero {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+}
+.btn-hero:hover {
+  background: white;
+  color: #111;
+}
+/* ===== FOOTER ===== */
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  position: relative;
+  width: 100%;
+  bottom: 0;
+  font-size: 0.95rem;
+  margin-top: 40px; /* 🔹 Espacio visual antes del footer */
+}
+
+/* Si la página tiene poco contenido, lo empuja al fondo */
+body, html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1; /* 🔹 Hace que el main ocupe todo el espacio posible */
+}
+/* ===== RESET GENERAL ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== PALETA MÁS NEUTRA ===== */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f1f2f3;  /* 🔹 fondo gris suave en lugar de blanco puro */
+  color: #2c2c2c;             /* 🔹 texto gris oscuro, no negro fuerte */
+  line-height: 1.6;
+}
+
+/* ===== NAVBAR MÁS SUAVE ===== */
+.navbar-container {
+  background: #1e3a5f; /* 🔹 azul oscuro elegante, menos saturado */
+  padding: 14px 20px;
+  color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-container nav a {
+  text-decoration: none;
+  color: #f0f0f0;
+  font-weight: 500;
+  font-size: 17px;
+  transition: color 0.3s ease;
+}
+
+.navbar-container nav a:hover {
+  color: #ffd166; /* 🔹 dorado tenue, no amarillo brillante */
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  height: 85vh;
+  background: linear-gradient(to bottom, rgba(30, 58, 95, 0.6), rgba(30, 58, 95, 0.3)), 
+              url("/src/assets/img/banner5.jpg") center/cover no-repeat;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-text {
+  z-index: 2;
+}
+
+.hero-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.btn-hero {
+  background: transparent;
+  border: 2px solid #fff;
+  padding: 12px 20px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-hero:hover {
+  background: #fff;
+  color: #1e3a5f;
+}
+
+/* ===== PRODUCTOS ===== */
+#productos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin: 40px auto;
+}
+
+.producto-card {
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 230px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.producto-card img {
+  border-radius: 8px;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.producto-card button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background: #1e3a5f; /* 🔹 azul sobrio */
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.producto-card button:hover {
+  background: #16324f;
+}
+
+/* ===== FOOTER MÁS ELEGANTE ===== */
+footer {
+  background: #1a1a1a; /* 🔹 gris casi negro */
+  color: #ccc;         /* 🔹 texto gris claro */
+  text-align: center;
+  padding: 25px 10px;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+  margin-top: 60px;
+  box-shadow: inset 0 2px 5px rgba(255,255,255,0.05);
+}
+
+footer a {
+  color: #ffd166;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===== BOTONES GLOBALES ===== */
+button, .btn {
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background: #274b7a;
+}
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #34495e, #dcdde1);
+  color: #f5f6fa;
+}
+.sidebar {
+  background: rgba(30, 48, 80, 0.9);
+}
+.admin-content {
+  background: transparent;
+}
+.admin-layout {
+  background: linear-gradient(135deg, #3b4a5a 0%, #cfd4da 100%);
+}
+.carrito-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.carrito-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carrito-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Contenedor general del carrito */
+.carrito-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.carrito-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 40px;
+  gap: 10px;
+}
+
+/* Cada producto */
+.carrito-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 150px;
+  align-items: center;
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carrito-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Imagen */
+.carrito-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px;
+}
+
+/* Info del producto */
+.carrito-info {
+  padding: 0 20px;
+}
+
+.carrito-info h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.carrito-info p {
+  margin: 2px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Controles de cantidad y botón */
+.carrito-controles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cantidad-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cantidad-controls button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cantidad-controls button:hover {
+  background-color: #0056b3;
+}
+
+.btn-eliminar {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-eliminar:hover {
+  background-color: #f5c6cb;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .carrito-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .carrito-info {
+    padding: 10px 0;
+  }
+}
+/* ===== ESTILO ACTIVO PARA EL NAV DEL ADMIN ===== */
+.sidebar a.active {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: block;
+}
