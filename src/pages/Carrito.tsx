@@ -19,12 +19,16 @@ export default function Carrito() {
     calcularTotal(carritoGuardado);
   }, []);
 
-  // 💰 Calcular total
+  // 💰 Calcular total (considera ofertas)
   const calcularTotal = (carritoActual: ProductoConCantidad[]) => {
-    const totalCalculado = carritoActual.reduce(
-      (sum, item) => sum + item.precio * item.cantidad,
-      0
-    );
+    const totalCalculado = carritoActual.reduce((sum, item) => {
+      const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
+      const precioFinal = tieneOferta
+        ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
+        : item.precio;
+      return sum + precioFinal * item.cantidad;
+    }, 0);
+
     setTotal(totalCalculado);
   };
 
@@ -43,19 +47,16 @@ export default function Carrito() {
       return;
     }
 
-    // 🧩 Leer productos originales (con stock actual)
     const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
     const productoOriginal = productosCliente.find((p: any) => p.id === id);
     const stockDisponible = productoOriginal?.stock ?? 0;
 
-    // 🚫 Si se supera el stock, mostrar aviso y detener
     const productoCarrito = carrito.find((p) => p.id === id);
     if (productoCarrito && nuevaCantidad > stockDisponible) {
       alert(`⚠️ No puedes agregar más unidades. Solo hay ${stockDisponible} disponibles en stock.`);
       return;
     }
 
-    // ✅ Actualizar carrito y localStorage
     const nuevoCarrito = carrito.map((item) =>
       item.id === id ? { ...item, cantidad: nuevaCantidad } : item
     );
@@ -84,39 +85,81 @@ export default function Carrito() {
               <tr>
                 <th>Imagen</th>
                 <th>Nombre</th>
-                <th>Precio</th>
+                <th>Precio Unitario</th>
+                <th>Descuento</th>
                 <th>Cantidad</th>
                 <th>Subtotal</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {carrito.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <img src={item.imagen} alt={item.nombre} />
-                  </td>
-                  <td>{item.nombre}</td>
-                  <td>${item.precio}</td>
-                  <td>
-                    <div className="cantidad-controls">
-                      <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)}>
-                        -
+              {carrito.map((item) => {
+                const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
+                const precioFinal = tieneOferta
+                  ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
+                  : item.precio;
+                const subtotal = precioFinal * item.cantidad;
+
+                return (
+                  <tr key={item.id}>
+                    <td>
+                      <img src={item.imagen} alt={item.nombre} />
+                    </td>
+                    <td>{item.nombre}</td>
+
+                    {/* 💸 Precio original */}
+                    <td>
+                      {tieneOferta ? (
+                        <>
+                          <span style={{ textDecoration: "line-through", color: "#888" }}>
+                            ${item.precio}
+                          </span>
+                          <br />
+                          <span style={{ color: "#e63946", fontWeight: "bold" }}>
+                            ${precioFinal}
+                          </span>
+                        </>
+                      ) : (
+                        <>${item.precio}</>
+                      )}
+                    </td>
+
+                    {/* 🏷️ Nueva columna de descuento */}
+                    <td>
+                      {tieneOferta ? (
+                        <span style={{ color: "#2a9d8f", fontWeight: "bold" }}>
+                          -{item.descuento}%
+                        </span>
+                      ) : (
+                        <span>—</span>
+                      )}
+                    </td>
+
+                    {/* ➕➖ Cantidad */}
+                    <td>
+                      <div className="cantidad-controls">
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)}>
+                          -
+                        </button>
+                        <span>{item.cantidad}</span>
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}>
+                          +
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* 💰 Subtotal */}
+                    <td>${subtotal}</td>
+
+                    {/* 🗑️ Eliminar */}
+                    <td>
+                      <button className="btn-eliminar" onClick={() => eliminarDelCarrito(item.id)}>
+                        Eliminar
                       </button>
-                      <span>{item.cantidad}</span>
-                      <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}>
-                        +
-                      </button>
-                    </div>
-                  </td>
-                  <td>${item.precio * item.cantidad}</td>
-                  <td>
-                    <button className="btn-eliminar" onClick={() => eliminarDelCarrito(item.id)}>
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 

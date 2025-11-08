@@ -17,16 +17,13 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Maneja los cambios en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Envío del formulario (simulación de pago)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 🧩 Validaciones de campos vacíos
     if (Object.values(formData).some((v) => v === "")) {
       setError("⚠️ Todos los campos son obligatorios");
       return;
@@ -35,63 +32,70 @@ export default function Checkout() {
     setError("");
     setLoading(true);
 
-    // Simulación del proceso de pago (2 segundos)
     setTimeout(() => {
       setLoading(false);
-      const exito = Math.random() > 0.3; // 70% de probabilidad de éxito
+      const exito = Math.random() > 0.3; // 70% éxito
 
       if (exito) {
-        // ✅ GUARDAR LA COMPRA EN LOCALSTORAGE
-
-        // 1️⃣ Leer carrito y usuario actual
+        // 1) Leer carrito y usuario actual
         const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
         const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual") || "null");
 
-        // 2️⃣ Armar objeto de compra
+        // 2) Guardar la compra (histórico)
         const nuevaCompra = {
-          id: Date.now(), // ID único basado en timestamp
+          id: Date.now(),
           comprador: usuarioActual ? usuarioActual.nombre : formData.nombre,
           correo: usuarioActual ? usuarioActual.correo : formData.correo,
-          fecha: new Date().toLocaleString(), // Fecha y hora legible
-          total: carrito.reduce(
-            (sum: number, item: any) => sum + item.precio * item.cantidad,
-            0
-          ),
+          fecha: new Date().toLocaleString(),
+          total: carrito.reduce((sum: number, item: any) => {
+            const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
+            const precioFinal = tieneOferta
+              ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
+              : item.precio;
+            return sum + precioFinal * item.cantidad;
+          }, 0),
           productos: carrito.map((p: any) => ({
             id: p.id,
             nombre: p.nombre,
             precio: p.precio,
+            descuento: p.descuento ?? 0,
+            oferta: !!p.oferta,
             cantidad: p.cantidad,
           })),
         };
 
-        // 3️⃣ Guardar la compra en el historial
         const compras = JSON.parse(localStorage.getItem("compras") || "[]");
         compras.push(nuevaCompra);
         localStorage.setItem("compras", JSON.stringify(compras));
 
-        // 4️⃣ 🔹 Actualizar el stock de productos luego de la compra
-        const productosGuardados = JSON.parse(
-          localStorage.getItem("productosCliente") || "[]"
-        );
+        // 3) RESTAR STOCK a productosCliente
+        const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
+        const actualizados = productosCliente.map((prod: any) => {
+          const enCarrito = carrito.find((c: any) => c.id === prod.id);
+          if (!enCarrito) return prod;
 
-        const productosActualizados = productosGuardados.map((p: any) => {
-          const comprado = carrito.find((c: any) => c.id === p.id);
-          if (comprado) {
-            // Resta del stock la cantidad comprada, sin bajar de 0
-            const nuevoStock = Math.max((p.stock ?? 0) - comprado.cantidad, 0);
-            return { ...p, stock: nuevoStock };
-          }
-          return p;
+          const nuevoStock = Math.max((prod.stock ?? 0) - enCarrito.cantidad, 0);
+          const sinStock = nuevoStock <= 0;
+
+          return {
+            ...prod,
+            stock: nuevoStock,
+            // si quedó sin stock, quita oferta
+            oferta: sinStock ? false : prod.oferta,
+            descuento: sinStock ? 0 : (prod.descuento ?? 0),
+          };
         });
 
-        localStorage.setItem(
-          "productosCliente",
-          JSON.stringify(productosActualizados)
-        );
+        localStorage.setItem("productosCliente", JSON.stringify(actualizados));
 
-        // 5️⃣ Limpiar carrito y redirigir a página de éxito
+        // 4) Limpiar carrito
         localStorage.removeItem("carrito");
+
+        // 5) Notificar a otras vistas (admin) que hubo actualización de productos
+        try {
+          window.dispatchEvent(new Event("productos-actualizados"));
+        } catch {}
+
         navigate("/compra-exitosa");
       } else {
         navigate("/compra-fallida");
@@ -99,7 +103,6 @@ export default function Checkout() {
     }, 2000);
   };
 
-  // 🧾 Render del formulario
   return (
     <main className="checkout-container container mt-4">
       <h2 className="text-center mb-3">💳 Confirmar Compra</h2>

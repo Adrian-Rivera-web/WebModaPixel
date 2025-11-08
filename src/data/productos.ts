@@ -6,7 +6,9 @@ export interface Producto {
   imagen: string;
   descripcion: string;
   stock?: number;
-  categoria?: string; // 👈 Importante para el filtrado
+  categoria?: string;
+  oferta?: boolean;     // 👈 nuevo
+  descuento?: number; // 👈 Importante para el filtrado
 }
 
 export const productos: Producto[] = [

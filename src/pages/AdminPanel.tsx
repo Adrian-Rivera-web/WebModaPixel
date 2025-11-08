@@ -5,9 +5,10 @@ import AdminHome from "./admin/AdminHome";
 import AdminProductos from "./admin/AdminProductos";
 import AdminUsuarios from "./admin/AdminUsuarios";
 import AdminOfertas from "./admin/AdminOfertas";
-import AdminConfig from "./admin/AdminConfig";
-import AdminCompras from "./admin/AdminCompras";
+import AdminPerfil from "./admin/AdminPerfil";
 import AdminReportes from "./admin/AdminReportes";
+import AdminCategorias from "./admin/AdminCategorias";
+import AdminOrdenes from "./admin/AdminOrdenes";
 import "../assets/css/styles.css";
 
 export default function AdminPanel() {
@@ -54,12 +55,14 @@ export default function AdminPanel() {
         <h3>⚙️ Panel Admin</h3>
         <ul>
           <li><NavLink to="/admin" end>🏠 Dashboard</NavLink></li>
+          <li><NavLink to="/admin/ordenes">🧾 Órdenes</NavLink></li>
           <li><NavLink to="/admin/productos">📦 Productos</NavLink></li>
-          <li><NavLink to="/admin/compras">🧾 Compras</NavLink></li>
+          <li><NavLink to="/admin/categorias">🏷️ Categorías</NavLink></li>
           <li><NavLink to="/admin/usuarios">👤 Usuarios</NavLink></li>
           <li><NavLink to="/admin/ofertas">🏷️ Ofertas</NavLink></li>
           <li><NavLink to="/admin/reportes">📊 Reportes</NavLink></li>
-          <li><NavLink to="/admin/configuracion">⚙️ Configuración</NavLink></li>
+          <li><NavLink to="/admin/perfil">👤 Perfil</NavLink></li>
+          
         </ul>
 
         <button onClick={cerrarSesion} className="btn btn-danger w-100 mt-3">
@@ -71,12 +74,13 @@ export default function AdminPanel() {
       <section className="admin-content">
         <Routes>
           <Route index element={<AdminHome />} /> {/* /admin */}
-          <Route path="productos" element={<AdminProductos />} />
-          <Route path="usuarios" element={<AdminUsuarios />} />
+          <Route path="ordenes/*" element={<AdminOrdenes />} />
+          <Route path="productos/*" element={<AdminProductos />} />
+          <Route path="usuarios/*" element={<AdminUsuarios />} />
           <Route path="ofertas" element={<AdminOfertas />} />
           <Route path="reportes" element={<AdminReportes />} />
-          <Route path="compras" element={<AdminCompras />} />
-          <Route path="configuracion" element={<AdminConfig />} />
+          <Route path="categorias/*" element={<AdminCategorias />} />
+          <Route path="perfil" element={<AdminPerfil />} /> {/* 👈 nueva ruta */}
         </Routes>
       </section>
     </main>
