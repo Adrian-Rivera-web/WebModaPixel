@@ -33,7 +33,6 @@ export default function AdminPerfil() {
         <div className="text-center mb-4">
           <img
             src="/src/assets/img/avatar-admin.png"
-            alt="Avatar admin"
             style={{
               width: "100px",
               height: "100px",
@@ -71,10 +70,12 @@ export default function AdminPerfil() {
 
         <div className="text-center">
           <button
-            className="btn btn-outline-secondary"
-            onClick={() => alert("✏️ Función de edición en desarrollo")}
+            className="btn btn-outline-secondary px-4"
+            onClick={() =>
+              alert("🛠️ La función 'Editar perfil' se encuentra en proceso de desarrollo.")
+            }
           >
-            Editar perfil
+            🕓 En proceso
           </button>
         </div>
       </div>

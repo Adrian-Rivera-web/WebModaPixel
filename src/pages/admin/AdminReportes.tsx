@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "../../assets/css/styles.css";
 
-
 interface Compra {
   id: number;
   total: number;
@@ -75,7 +74,8 @@ export default function AdminReportes() {
         <div className="col-md-3 mb-3">
           <div className="card shadow-sm border-0 p-3 bg-light">
             <h5>💰 Ingresos Totales</h5>
-            <h4 className="text-danger fw-bold">${totalIngresos.toLocaleString()}</h4>
+            {/* 🔹 Cambiado de text-danger a text-success */}
+            <h4 className="text-success fw-bold">${totalIngresos.toLocaleString()}</h4>
           </div>
         </div>
       </section>
@@ -158,7 +158,7 @@ function CategoriaChart() {
                 style={{
                   width: `${porcentaje}%`,
                   height: "100%",
-                  background: "#0d6efd",
+                  background: "#198754", // 🔹 Verde Bootstrap (éxito)
                   textAlign: "right",
                   color: "white",
                   fontSize: "12px",
