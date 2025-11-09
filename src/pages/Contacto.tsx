@@ -31,7 +31,7 @@ export default function Contacto() {
     const mensajeContacto = { nombre, correo, comentario };
     localStorage.setItem("contacto", JSON.stringify(mensajeContacto));
 
-    setMensaje("Mensaje enviado correctamente ✅");
+    setMensaje("Mensaje enviado correctamente ");
     setNombre("");
     setCorreo("");
     setComentario("");

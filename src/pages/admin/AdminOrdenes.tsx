@@ -37,14 +37,14 @@ export default function AdminOrdenes() {
 
   return (
     <main className="container mt-4">
-      <h2 className="fw-bold text-primary mb-3">🧾 Gestión de Órdenes</h2>
+      <h2 className="fw-bold text-primary mb-3">Gestión de Órdenes</h2>
       <p className="mb-4">
         Desde esta sección puedes visualizar las órdenes generadas y las boletas de venta emitidas.
       </p>
 
       {/* 📊 Resumen general */}
       <section className="card p-4 shadow-sm mb-4">
-        <h5 className="text-secondary mb-3">📈 Resumen general</h5>
+        <h5 className="text-secondary mb-3">Resumen general</h5>
         <div className="d-flex flex-wrap gap-4">
           <div className="card p-3 bg-light flex-fill text-center">
             <h6>Total de Boletas</h6>
@@ -63,7 +63,7 @@ export default function AdminOrdenes() {
 
       {/* 🕓 Últimas boletas */}
       <section className="card p-4 shadow-sm mb-4">
-        <h5 className="text-secondary mb-3">🕓 Últimas Boletas Emitidas</h5>
+        <h5 className="text-secondary mb-3">Últimas Boletas Emitidas</h5>
 
         {ultimasBoletas.length === 0 ? (
           <p>No hay boletas registradas todavía.</p>
@@ -95,7 +95,7 @@ export default function AdminOrdenes() {
       <div className="text-end">
         {!location.pathname.endsWith("/boletas") && (
           <Link to="/admin/ordenes/boletas" className="btn btn-outline-primary">
-            📄 Mostrar Boletas
+            Mostrar Boletas
           </Link>
         )}
       </div>

@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import type { Producto } from "../data/productos";
+import { useLocalStorage } from "../hooks/useLocalStorage"; // ✅ usamos el nuevo hook
 
 interface ItemCarrito extends Producto {
   cantidad: number;
@@ -16,15 +17,10 @@ interface CarritoContextType {
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
 
 export function CarritoProvider({ children }: { children: ReactNode }) {
-  const [carrito, setCarrito] = useState<ItemCarrito[]>(() => {
-    const guardado = localStorage.getItem("carrito");
-    return guardado ? JSON.parse(guardado) : [];
-  });
+  // ✅ reemplazamos useState + useEffect por useLocalStorage
+  const [carrito, setCarrito] = useLocalStorage<ItemCarrito[]>("carrito", []);
 
-  useEffect(() => {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-  }, [carrito]);
-
+  // 🛒 Agregar producto (si existe, suma cantidad)
   const agregarProducto = (producto: Producto) => {
     setCarrito((prev) => {
       const existe = prev.find((p) => p.id === producto.id);
@@ -38,14 +34,17 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // 🗑️ Eliminar producto por id
   const eliminarProducto = (id: number) => {
     setCarrito((prev) => prev.filter((p) => p.id !== id));
   };
 
+  // 💥 Vaciar todo el carrito
   const vaciarCarrito = () => {
     setCarrito([]);
   };
 
+  // 💰 Calcular total del carrito
   const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
   return (
@@ -57,8 +56,10 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// 🔁 Hook personalizado para usar el contexto en cualquier componente
 export function useCarrito() {
   const context = useContext(CarritoContext);
-  if (!context) throw new Error("useCarrito debe usarse dentro de un CarritoProvider");
+  if (!context)
+    throw new Error("useCarrito debe usarse dentro de un CarritoProvider");
   return context;
 }

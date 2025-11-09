@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Routes, Route, useNavigate } from "react-router-dom";
-import { getSesion } from "../utils/auth";
+import { useSesion } from "../hooks/useSesion"; // ✅ nuevo hook
 import AdminHome from "./admin/AdminHome";
 import AdminProductos from "./admin/AdminProductos";
 import AdminUsuarios from "./admin/AdminUsuarios";
@@ -13,23 +13,17 @@ import "../assets/css/styles.css";
 
 export default function AdminPanel() {
   const navigate = useNavigate();
+  const { usuario, cerrarSesion } = useSesion(); // ✅ obtenemos sesión activa
   const [accesoDenegado, setAccesoDenegado] = useState(false);
 
   // 🔹 Verifica si el usuario es admin al cargar el panel
   useEffect(() => {
-    const usuarioActual = getSesion();
-    if (usuarioActual?.tipo === "admin") {
-      setAccesoDenegado(false);
-    } else {
+    if (!usuario || usuario.tipo !== "admin") {
       setAccesoDenegado(true);
+    } else {
+      setAccesoDenegado(false);
     }
-  }, []);
-
-  // 🔹 Cierra sesión y redirige al login
-  const cerrarSesion = () => {
-    localStorage.removeItem("usuarioActual");
-    navigate("/login");
-  };
+  }, [usuario]); // ✅ ahora depende del hook, no de localStorage
 
   // 🔹 Si no tiene permiso, muestra pantalla de bloqueo
   if (accesoDenegado) {
@@ -52,21 +46,26 @@ export default function AdminPanel() {
     <main className="admin-layout">
       {/* Menú lateral fijo */}
       <aside className="sidebar">
-        <h3>⚙️ Panel Admin</h3>
+        <h3>Panel Admin</h3>
         <ul>
-          <li><NavLink to="/admin" end>🏠 Dashboard</NavLink></li>
-          <li><NavLink to="/admin/ordenes">🧾 Órdenes</NavLink></li>
-          <li><NavLink to="/admin/productos">📦 Productos</NavLink></li>
-          <li><NavLink to="/admin/categorias">🏷️ Categorías</NavLink></li>
-          <li><NavLink to="/admin/usuarios">👤 Usuarios</NavLink></li>
-          <li><NavLink to="/admin/ofertas">🏷️ Ofertas</NavLink></li>
-          <li><NavLink to="/admin/reportes">📊 Reportes</NavLink></li>
-          <li><NavLink to="/admin/perfil">👤 Perfil</NavLink></li>
-          
+          <li><NavLink to="/admin" end>Dashboard</NavLink></li>
+          <li><NavLink to="/admin/ordenes">Órdenes</NavLink></li>
+          <li><NavLink to="/admin/productos">Productos</NavLink></li>
+          <li><NavLink to="/admin/categorias">Categorías</NavLink></li>
+          <li><NavLink to="/admin/usuarios">Usuarios</NavLink></li>
+          <li><NavLink to="/admin/ofertas">Ofertas</NavLink></li>
+          <li><NavLink to="/admin/reportes">Reportes</NavLink></li>
+          <li><NavLink to="/admin/perfil">Perfil</NavLink></li>
         </ul>
 
-        <button onClick={cerrarSesion} className="btn btn-danger w-100 mt-3">
-          🚪 Cerrar sesión
+        <button
+          onClick={() => {
+            cerrarSesion(); // ✅ ahora centralizado en el hook
+            navigate("/login");
+          }}
+          className="btn btn-danger w-100 mt-3"
+        >
+          Cerrar sesión
         </button>
       </aside>
 
@@ -80,7 +79,7 @@ export default function AdminPanel() {
           <Route path="ofertas" element={<AdminOfertas />} />
           <Route path="reportes" element={<AdminReportes />} />
           <Route path="categorias/*" element={<AdminCategorias />} />
-          <Route path="perfil" element={<AdminPerfil />} /> {/* 👈 nueva ruta */}
+          <Route path="perfil" element={<AdminPerfil />} /> {/* 👤 Perfil admin */}
         </Routes>
       </section>
     </main>

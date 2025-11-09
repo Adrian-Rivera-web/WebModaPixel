@@ -5,10 +5,11 @@ export interface Producto {
   precio: number;
   imagen: string;
   descripcion: string;
-  stock?: number;
+  stock: number;
   categoria?: string;
   oferta?: boolean;     // 👈 nuevo
-  descuento?: number; // 👈 Importante para el filtrado
+  descuento?: number;
+  fechaAgregado?: string; // 👈 Importante para el filtrado
 }
 
 export const productos: Producto[] = [

@@ -16,19 +16,31 @@ export default function ProductosEditar() {
   const guardarCambios = () => {
     if (!producto) return;
     const guardados = JSON.parse(localStorage.getItem("productosCliente") || "[]");
+
+    // 🔸 Desactiva oferta si el stock llega a 0
+    let productoActualizado = { ...producto };
+    if (producto.stock === 0) {
+      productoActualizado.oferta = false;
+      productoActualizado.descuento = 0;
+    }
+
     const actualizados = guardados.map((p: Producto) =>
-      p.id === producto.id ? producto : p
+      p.id === producto.id ? productoActualizado : p
     );
     localStorage.setItem("productosCliente", JSON.stringify(actualizados));
+
+    // 🔁 Notificar a otras vistas
+    window.dispatchEvent(new Event("productos-actualizados"));
+
     alert("✅ Producto actualizado correctamente");
     navigate("/admin/productos/mostrar");
   };
 
-  if (!producto) return <p>❌ Producto no encontrado</p>;
+  if (!producto) return <p>Producto no encontrado</p>;
 
   return (
     <section className="mt-4">
-      <h4 className="text-secondary mb-3">✏️ Editar producto #{producto.id}</h4>
+      <h4 className="text-secondary mb-3">Editar producto #{producto.id}</h4>
       <div className="card p-4 shadow-sm">
         <label className="form-label">Nombre:</label>
         <input
@@ -55,7 +67,7 @@ export default function ProductosEditar() {
         />
 
         <button onClick={guardarCambios} className="btn btn-primary">
-          💾 Guardar cambios
+          Guardar cambios
         </button>
       </div>
     </section>

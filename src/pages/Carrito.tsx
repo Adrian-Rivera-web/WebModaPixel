@@ -53,7 +53,7 @@ export default function Carrito() {
 
     const productoCarrito = carrito.find((p) => p.id === id);
     if (productoCarrito && nuevaCantidad > stockDisponible) {
-      alert(`⚠️ No puedes agregar más unidades. Solo hay ${stockDisponible} disponibles en stock.`);
+      alert(`No puedes agregar más unidades. Solo hay ${stockDisponible} disponibles en stock.`);
       return;
     }
 

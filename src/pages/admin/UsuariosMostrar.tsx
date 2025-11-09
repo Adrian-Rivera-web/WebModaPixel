@@ -29,7 +29,7 @@ export default function UsuariosMostrar() {
 
   return (
     <section>
-      <h4 className="text-secondary mb-3 text-center">📋 Mostrar usuarios</h4>
+      <h4 className="text-secondary mb-3 text-center">Mostrar usuarios</h4>
 
       {/* Submenú secundario */}
       <ul className="nav nav-pills gap-2 mb-4 justify-content-center">
@@ -40,7 +40,7 @@ export default function UsuariosMostrar() {
               `nav-link ${isActive ? "active btn-warning text-dark" : "btn-outline-warning"}`
             }
           >
-            ✏️ Editar usuarios
+            Editar usuarios
           </NavLink>
         </li>
         <li className="nav-item">
@@ -50,7 +50,7 @@ export default function UsuariosMostrar() {
               `nav-link ${isActive ? "active btn-info text-dark" : "btn-outline-info"}`
             }
           >
-            🧾 Historial de compras
+            Historial de compras
           </NavLink>
         </li>
       </ul>
@@ -61,7 +61,7 @@ export default function UsuariosMostrar() {
           <input
             type="text"
             className="form-control w-50"
-            placeholder="🔍 Buscar por nombre, correo o RUN..."
+            placeholder="Buscar por nombre, correo o RUN..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -71,7 +71,7 @@ export default function UsuariosMostrar() {
               setUsuarios(JSON.parse(localStorage.getItem("usuarios") || "[]"))
             }
           >
-            🔄 Actualizar lista
+            Actualizar lista
           </button>
         </div>
 

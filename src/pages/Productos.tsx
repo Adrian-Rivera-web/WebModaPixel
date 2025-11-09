@@ -14,6 +14,7 @@ export default function Productos() {
   );
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("todos");
+  const [categorias, setCategorias] = useState<string[]>([]); // 🆕 lista dinámica
 
   // 🔹 Cargar productos desde localStorage o base por defecto
   useEffect(() => {
@@ -35,6 +36,12 @@ export default function Productos() {
     return () => window.removeEventListener("storage", syncProductos);
   }, []);
 
+  // 🧩 Cargar categorías dinámicamente desde localStorage
+  useEffect(() => {
+    const guardadas = JSON.parse(localStorage.getItem("categorias") || "[]");
+    setCategorias(guardadas.map((c: any) => c.nombre));
+  }, []);
+
   // 🛒 Agregar producto al carrito con control de stock
   const agregarAlCarrito = (producto: Producto) => {
     const existente = carrito.find((p) => p.id === producto.id);
@@ -42,7 +49,7 @@ export default function Productos() {
     if (existente) {
       // 🚫 Si ya alcanzó el stock máximo, no deja agregar más
       if (existente.cantidad >= (producto.stock ?? 0)) {
-        alert(`⚠️ Solo puedes comprar hasta ${producto.stock} unidades de este producto.`);
+        alert(`Solo puedes comprar hasta ${producto.stock} unidades de este producto.`);
         return;
       }
 
@@ -54,7 +61,7 @@ export default function Productos() {
     } else {
       // Si el stock es 0, no permite agregar
       if ((producto.stock ?? 0) <= 0) {
-        alert(`❌ No hay stock disponible para ${producto.nombre}.`);
+        alert(`No hay stock disponible para ${producto.nombre}.`);
         return;
       }
 
@@ -63,7 +70,7 @@ export default function Productos() {
       localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
     }
 
-    alert(`${producto.nombre} se añadió al carrito 🛒`);
+    alert(`${producto.nombre} se añadió al carrito `);
   };
 
   // 🔍 Filtrado por nombre y categoría
@@ -99,6 +106,7 @@ export default function Productos() {
           }}
         />
 
+        {/* 🔸 Selector dinámico de categorías */}
         <select
           value={categoria}
           onChange={(e) => setCategoria(e.target.value)}
@@ -109,9 +117,15 @@ export default function Productos() {
           }}
         >
           <option value="todos">Todas las categorías</option>
-          <option value="Ropa">Ropa</option>
-          <option value="Calzado">Calzado</option>
-          <option value="Accesorios">Accesorios</option>
+          {categorias.length > 0 ? (
+            categorias.map((cat, i) => (
+              <option key={i} value={cat}>
+                {cat}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay categorías disponibles</option>
+          )}
         </select>
       </div>
 
@@ -130,7 +144,7 @@ export default function Productos() {
             <ProductoCard key={p.id} producto={p} onAgregar={agregarAlCarrito} />
           ))
         ) : (
-          <p>No se encontraron productos 😢</p>
+          <p>No se encontraron productos</p>
         )}
       </section>
     </main>

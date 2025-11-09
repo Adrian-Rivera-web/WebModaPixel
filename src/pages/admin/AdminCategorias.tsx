@@ -6,7 +6,7 @@ import "../../assets/css/styles.css";
 export default function AdminCategorias() {
   return (
     <main className="container mt-4">
-      <h2 className="fw-bold text-primary mb-3">🏷️ Gestión de Categorías</h2>
+      <h2 className="fw-bold text-primary mb-3">Gestión de Categorías</h2>
 
       {/* 🔹 Submenú de navegación */}
       <nav className="mb-4">
@@ -22,7 +22,7 @@ export default function AdminCategorias() {
                 }`
               }
             >
-              ➕ Nueva categoría
+              Nueva categoría
             </NavLink>
           </li>
 
@@ -37,7 +37,7 @@ export default function AdminCategorias() {
                 }`
               }
             >
-              ✏️ Editar categorías
+              Editar categorías
             </NavLink>
           </li>
         </ul>
@@ -50,7 +50,7 @@ export default function AdminCategorias() {
             index
             element={
               <div className="text-center text-muted">
-                <h5>👈 Selecciona una opción para comenzar</h5>
+                <h5>Selecciona una opción para comenzar</h5>
               </div>
             }
           />

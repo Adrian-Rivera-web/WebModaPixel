@@ -26,7 +26,7 @@ export default function CategoriasNueva() {
     e.preventDefault();
 
     if (!nombre.trim()) {
-      setMensaje("⚠️ El nombre de la categoría es obligatorio.");
+      setMensaje("El nombre de la categoría es obligatorio.");
       return;
     }
 
@@ -39,27 +39,35 @@ export default function CategoriasNueva() {
     guardarCategorias([...categorias, nueva]);
     setNombre("");
     setDescripcion("");
-    setMensaje("✅ Categoría agregada correctamente.");
+    setMensaje("Categoría agregada correctamente.");
   };
 
   return (
-    <section>
-      <h4 className="text-secondary mb-3">➕ Agregar nueva categoría</h4>
+    <section className="container-fluid">
+      <h4 className="text-secondary fw-bold mb-4 text-center">
+        Agregar nueva categoría
+      </h4>
 
+      {/* Mensaje */}
       {mensaje && (
         <div
           className={`alert ${
             mensaje.includes("⚠️") ? "alert-warning" : "alert-success"
-          } text-center`}
+          } text-center shadow-sm`}
         >
           {mensaje}
         </div>
       )}
 
-      <form onSubmit={agregarCategoria}>
-        <div className="row g-3">
+      {/* Formulario centrado y ordenado */}
+      <form
+        onSubmit={agregarCategoria}
+        className="card shadow-sm border-0 p-4 mx-auto"
+        style={{ maxWidth: "700px", borderRadius: "12px" }}
+      >
+        <div className="row g-4 align-items-end">
           <div className="col-md-5">
-            <label className="form-label fw-semibold">Nombre</label>
+            <label className="form-label fw-semibold">Nombre de la categoría</label>
             <input
               type="text"
               value={nombre}
@@ -80,8 +88,12 @@ export default function CategoriasNueva() {
             />
           </div>
 
-          <div className="col-md-2 d-flex align-items-end">
-            <button type="submit" className="btn btn-primary w-100">
+          <div className="col-md-2 d-flex justify-content-center">
+            <button
+              type="submit"
+              className="btn btn-primary w-100 fw-semibold"
+              style={{ height: "42px", fontSize: "0.95rem" }}
+            >
               Agregar
             </button>
           </div>

@@ -40,7 +40,7 @@ export default function UsuariosHistorial() {
 
   return (
     <section>
-      <h5 className="text-secondary mb-3">🧾 Historial de Compras</h5>
+      <h5 className="text-secondary mb-3">Historial de Compras</h5>
 
       {compras.length === 0 ? (
         <p className="text-center text-muted">No hay compras registradas.</p>
@@ -84,7 +84,7 @@ export default function UsuariosHistorial() {
       {compraSeleccionada && (
         <div className="card mt-4 shadow-sm p-4 bg-white">
           <h5 className="text-primary mb-3">
-            🧾 Detalle de compra #{compraSeleccionada.id}
+            Detalle de compra #{compraSeleccionada.id}
           </h5>
           <p>
             <strong>Cliente:</strong> {compraSeleccionada.comprador}
@@ -118,7 +118,7 @@ export default function UsuariosHistorial() {
           </table>
 
           <h5 className="text-end mt-3 text-success">
-            💰 Total: ${compraSeleccionada.total}
+            Total: ${compraSeleccionada.total}
           </h5>
 
           <div className="text-center mt-3">

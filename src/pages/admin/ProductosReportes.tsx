@@ -28,7 +28,7 @@ export default function ProductosReportes() {
   return (
     <section>
       <h3 className="text-primary fw-bold mb-4 text-center">
-        📊 Reporte general de productos
+        Reporte general de productos
       </h3>
 
       {/* === Indicadores principales === */}
@@ -68,7 +68,7 @@ export default function ProductosReportes() {
       {/* === Productos críticos === */}
       <div className="card shadow-sm border-0 mb-4 p-3">
         <h5 className="text-danger mb-3">
-          ⚠️ Productos con stock crítico ({productosCriticos.length})
+          Productos con stock crítico ({productosCriticos.length})
         </h5>
         {productosCriticos.length === 0 ? (
           <p className="text-muted">No hay productos con stock bajo.</p>
@@ -101,7 +101,7 @@ export default function ProductosReportes() {
       {/* === Top productos por valor === */}
       <div className="card shadow-sm border-0 p-3">
         <h5 className="text-secondary mb-3">
-          💰 Top 5 productos más valiosos
+          Top 5 productos más valiosos
         </h5>
         {topValiosos.length === 0 ? (
           <p className="text-muted">Aún no hay productos registrados.</p>

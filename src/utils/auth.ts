@@ -2,7 +2,7 @@ export type Usuario = {
   run: string;
   nombre: string;
   correo: string;
-  clave: string;
+  password: string;
   tipo: "admin" | "cliente";
 };
 

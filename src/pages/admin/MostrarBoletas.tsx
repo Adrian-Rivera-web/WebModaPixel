@@ -25,7 +25,7 @@ export default function MostrarBoletas() {
 
   return (
     <section>
-      <h3 className="text-secondary mb-3">📑 Boletas Emitidas</h3>
+      <h3 className="text-secondary mb-3">Boletas Emitidas</h3>
 
       {boletas.length === 0 ? (
         <p>No hay boletas registradas.</p>

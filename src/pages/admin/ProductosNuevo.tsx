@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Producto } from "../../data/productos";
 
 export default function ProductosNuevo() {
   const [mensaje, setMensaje] = useState("");
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
   const [imagenBase64, setImagenBase64] = useState<string>("");
+  const [categorias, setCategorias] = useState<string[]>([]);
+
+  // 🧩 Cargar categorías desde localStorage dinámicamente
+  useEffect(() => {
+    const guardadas = JSON.parse(localStorage.getItem("categorias") || "[]");
+    setCategorias(guardadas.map((c: any) => c.nombre));
+  }, []);
 
   // 🧩 Convierte la imagen a base64
   const manejarImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +40,7 @@ export default function ProductosNuevo() {
 
     const productosGuardados = JSON.parse(localStorage.getItem("productosCliente") || "[]");
 
+    // 🆕 Se agrega la fecha y el campo oferta
     const nuevo: Producto = {
       id: productosGuardados.length + 1,
       nombre,
@@ -43,6 +51,7 @@ export default function ProductosNuevo() {
       stock,
       oferta: false,
       descuento: 0,
+      fechaAgregado: new Date().toISOString(), // ✅ Fecha actual
     };
 
     localStorage.setItem("productosCliente", JSON.stringify([...productosGuardados, nuevo]));
@@ -53,7 +62,7 @@ export default function ProductosNuevo() {
 
   return (
     <section className="container-fluid">
-      <h4 className="text-center text-secondary mb-4">➕ Agregar nuevo producto</h4>
+      <h4 className="text-center text-secondary mb-4">Agregar nuevo producto</h4>
 
       {mensaje && (
         <div
@@ -114,9 +123,15 @@ export default function ProductosNuevo() {
             <label className="form-label fw-semibold">Categoría</label>
             <select name="categoria" className="form-select">
               <option value="">Selecciona...</option>
-              <option value="Ropa">Ropa</option>
-              <option value="Calzado">Calzado</option>
-              <option value="Accesorios">Accesorios</option>
+              {categorias.length > 0 ? (
+                categorias.map((cat, i) => (
+                  <option key={i} value={cat}>
+                    {cat}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No hay categorías disponibles</option>
+              )}
             </select>
             <div className="form-text text-muted">
               Selecciona la categoría del producto

@@ -10,7 +10,7 @@ export default function Registro() {
     run: "",
     nombre: "",
     correo: "",
-    clave: "",
+    password: "",
   });
   const [mensaje, setMensaje] = useState("");
 
@@ -21,15 +21,15 @@ export default function Registro() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.run || !form.nombre || !form.correo || !form.clave) {
-      setMensaje("⚠️ Todos los campos son obligatorios");
+    if (!form.run || !form.nombre || !form.correo || !form.password) {
+      setMensaje("Todos los campos son obligatorios");
       return;
     }
 
     const usuarios = getUsuarios();
     const existe = usuarios.some((u) => u.correo === form.correo);
     if (existe) {
-      setMensaje("⚠️ Este correo ya está registrado");
+      setMensaje("Este correo ya está registrado");
       return;
     }
 
@@ -37,7 +37,7 @@ export default function Registro() {
       run: form.run,
       nombre: form.nombre,
       correo: form.correo,
-      clave: form.clave,
+      password: form.password,
       tipo: "cliente", // 👈 por defecto
     };
 
@@ -48,7 +48,7 @@ export default function Registro() {
 
   return (
     <main className="container mt-4">
-      <h2 className="text-center mb-4">📝 Crear Cuenta</h2>
+      <h2 className="text-center mb-4">Crear Cuenta</h2>
       <form
         onSubmit={handleSubmit}
         className="mx-auto shadow p-4 rounded bg-white"
@@ -98,9 +98,9 @@ export default function Registro() {
           <label>Contraseña</label>
           <input
             type="password"
-            name="clave"
+            name="password"
             className="form-control"
-            value={form.clave}
+            value={form.password}
             onChange={handleChange}
           />
         </div>

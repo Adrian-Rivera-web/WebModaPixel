@@ -24,12 +24,12 @@ export default function CategoriasEditar() {
     if (!confirm("¿Seguro que deseas eliminar esta categoría?")) return;
     const actualizadas = categorias.filter((c) => c.id !== id);
     guardarCategorias(actualizadas);
-    setMensaje("🗑️ Categoría eliminada correctamente.");
+    setMensaje("Categoría eliminada correctamente.");
   };
 
   return (
     <section>
-      <h4 className="text-secondary mb-3">✏️ Editar o eliminar categorías</h4>
+      <h4 className="text-secondary mb-3">Editar o eliminar categorías</h4>
 
       {mensaje && (
         <div
@@ -65,7 +65,7 @@ export default function CategoriasEditar() {
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => eliminarCategoria(c.id)}
                     >
-                      🗑️ Eliminar
+                      Eliminar
                     </button>
                   </td>
                 </tr>

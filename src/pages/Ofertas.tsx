@@ -36,7 +36,7 @@ export default function Ofertas() {
           })}
         </section>
       ) : (
-        <p>No hay ofertas disponibles actualmente 😢</p>
+        <p>No hay ofertas disponibles actualmente </p>
       )}
     </main>
   );

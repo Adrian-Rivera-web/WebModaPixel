@@ -7,14 +7,14 @@ import { getUsuarios, setSesion, type Usuario } from "../utils/auth";
 export default function Login() {
   const navigate = useNavigate();
   const [correo, setCorreo] = useState("");
-  const [clave, setClave] = useState("");
+  const [password, setpassword] = useState("");
   const [mensaje, setMensaje] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!correo || !clave) {
-      setMensaje("⚠️ Debes completar todos los campos");
+    if (!correo || !password) {
+      setMensaje("Debes completar todos los campos");
       return;
     }
 
@@ -23,13 +23,13 @@ export default function Login() {
       run: "00.000.000-0",
       nombre: "Administrador",
       correo: "admin@modapixel.cl",
-      clave: "admin123",
+      password: "admin123",
       tipo: "admin",
     };
 
-    if (correo === adminUser.correo && clave === adminUser.clave) {
+    if (correo === adminUser.correo && password === adminUser.password) {
       setSesion(adminUser);
-      setMensaje("✅ Bienvenido Administrador");
+      setMensaje("Bienvenido Administrador");
       setTimeout(() => navigate("/admin"), 800);
       return;
     }
@@ -37,26 +37,26 @@ export default function Login() {
     // 👤 Verificar usuario registrado (modelo unificado)
     const usuarios = getUsuarios();
     const usuarioEncontrado = usuarios.find(
-      (u) => u.correo === correo && u.clave === clave
+      (u) => u.correo === correo && u.password === password
     );
 
     if (usuarioEncontrado) {
       setSesion(usuarioEncontrado);
       if (usuarioEncontrado.tipo === "admin") {
-        setMensaje(`✅ Bienvenido Administrador ${usuarioEncontrado.nombre}`);
+        setMensaje(`Bienvenido Administrador ${usuarioEncontrado.nombre}`);
         setTimeout(() => navigate("/admin"), 800);
       } else {
-        setMensaje(`✅ Bienvenido ${usuarioEncontrado.nombre}`);
+        setMensaje(`Bienvenido ${usuarioEncontrado.nombre}`);
         setTimeout(() => navigate("/"), 800);
       }
     } else {
-      setMensaje("❌ Usuario o contraseña incorrectos");
+      setMensaje("Usuario o contraseña incorrectos");
     }
   };
 
   return (
     <main className="container mt-4">
-      <h2 className="text-center mb-4">🔐 Iniciar Sesión</h2>
+      <h2 className="text-center mb-4">Iniciar Sesión</h2>
       <form
         onSubmit={handleLogin}
         className="mx-auto shadow p-4 rounded bg-white"
@@ -93,8 +93,8 @@ export default function Login() {
             type="password"
             className="form-control"
             placeholder="********"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
+            value={password}
+            onChange={(e) => setpassword(e.target.value)}
           />
         </div>
 

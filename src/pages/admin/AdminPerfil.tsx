@@ -1,24 +1,13 @@
-import { useEffect, useState } from "react";
 import "../../assets/css/styles.css";
-
-interface Usuario {
-  nombre: string;
-  correo: string;
-  tipo: string;
-}
+import { useSesion } from "../../hooks/useSesion"; // ✅ importamos el hook
 
 export default function AdminPerfil() {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("usuarioActual") || "null");
-    setUsuario(data);
-  }, []);
+  const { usuario } = useSesion(); // ✅ obtenemos la sesión activa
 
   if (!usuario) {
     return (
       <main className="container mt-4 text-center">
-        <h2>⚙️ Perfil de Usuario</h2>
+        <h2>Perfil de Usuario</h2>
         <p>No hay información disponible. Inicia sesión nuevamente.</p>
       </main>
     );
@@ -33,6 +22,7 @@ export default function AdminPerfil() {
         <div className="text-center mb-4">
           <img
             src="/src/assets/img/avatar-admin.png"
+            alt="Avatar Admin"
             style={{
               width: "100px",
               height: "100px",
@@ -72,10 +62,10 @@ export default function AdminPerfil() {
           <button
             className="btn btn-outline-secondary px-4"
             onClick={() =>
-              alert("🛠️ La función 'Editar perfil' se encuentra en proceso de desarrollo.")
+              alert("La función 'Editar perfil' se encuentra en proceso de desarrollo.")
             }
           >
-            🕓 En proceso
+            En proceso
           </button>
         </div>
       </div>

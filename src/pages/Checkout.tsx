@@ -25,7 +25,7 @@ export default function Checkout() {
     e.preventDefault();
 
     if (Object.values(formData).some((v) => v === "")) {
-      setError("⚠️ Todos los campos son obligatorios");
+      setError("Todos los campos son obligatorios");
       return;
     }
 
@@ -37,67 +37,76 @@ export default function Checkout() {
       const exito = Math.random() > 0.3; // 70% éxito
 
       if (exito) {
-        // 1) Leer carrito y usuario actual
-        const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-        const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual") || "null");
+  // 1️⃣ Leer carrito y usuario actual
+  const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
+  const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual") || "null");
 
-        // 2) Guardar la compra (histórico)
-        const nuevaCompra = {
-          id: Date.now(),
-          comprador: usuarioActual ? usuarioActual.nombre : formData.nombre,
-          correo: usuarioActual ? usuarioActual.correo : formData.correo,
-          fecha: new Date().toLocaleString(),
-          total: carrito.reduce((sum: number, item: any) => {
-            const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
-            const precioFinal = tieneOferta
-              ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
-              : item.precio;
-            return sum + precioFinal * item.cantidad;
-          }, 0),
-          productos: carrito.map((p: any) => ({
-            id: p.id,
-            nombre: p.nombre,
-            precio: p.precio,
-            descuento: p.descuento ?? 0,
-            oferta: !!p.oferta,
-            cantidad: p.cantidad,
-          })),
-        };
+  // 2️⃣ Crear la compra con todos los datos necesarios
+  const nuevaCompra = {
+    id: Date.now(),
+    comprador: usuarioActual ? usuarioActual.nombre : formData.nombre,
+    correo: usuarioActual ? usuarioActual.correo : formData.correo,
+    usuario: usuarioActual ? usuarioActual.nombre : "Invitado", // 👈 para los reportes
+    fecha: new Date().toISOString(),
+    total: carrito.reduce((sum: number, item: any) => {
+      const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
+      const precioFinal = tieneOferta
+        ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
+        : item.precio;
+      return sum + precioFinal * item.cantidad;
+    }, 0),
+    productos: carrito.map((p: any) => ({
+      id: p.id,
+      nombre: p.nombre,
+      categoria: p.categoria || "Sin categoría", // 👈 evita undefined en reportes
+      precio: p.precio,
+      descuento: p.descuento ?? 0,
+      oferta: !!p.oferta,
+      cantidad: p.cantidad,
+    })),
+  };
 
-        const compras = JSON.parse(localStorage.getItem("compras") || "[]");
-        compras.push(nuevaCompra);
-        localStorage.setItem("compras", JSON.stringify(compras));
+  // 3️⃣ Guardar la compra
+  const compras = JSON.parse(localStorage.getItem("compras") || "[]");
+  compras.push(nuevaCompra);
+  localStorage.setItem("compras", JSON.stringify(compras));
 
-        // 3) RESTAR STOCK a productosCliente
-        const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
-        const actualizados = productosCliente.map((prod: any) => {
-          const enCarrito = carrito.find((c: any) => c.id === prod.id);
-          if (!enCarrito) return prod;
+  // 4️⃣ Restar stock en productosCliente
+  const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
+const actualizados = productosCliente.map((prod: any) => {
+  const enCarrito = carrito.find((c: any) => c.id === prod.id);
+  if (!enCarrito) return prod;
 
-          const nuevoStock = Math.max((prod.stock ?? 0) - enCarrito.cantidad, 0);
-          const sinStock = nuevoStock <= 0;
+  const nuevoStock = Math.max((prod.stock ?? 0) - enCarrito.cantidad, 0);
 
-          return {
-            ...prod,
-            stock: nuevoStock,
-            // si quedó sin stock, quita oferta
-            oferta: sinStock ? false : prod.oferta,
-            descuento: sinStock ? 0 : (prod.descuento ?? 0),
-          };
-        });
+  // Si el stock llega a 0, desactiva oferta y descuento
+  if (nuevoStock === 0) {
+    return {
+      ...prod,
+      stock: 0,
+      oferta: false,
+      descuento: 0,
+    };
+  }
 
-        localStorage.setItem("productosCliente", JSON.stringify(actualizados));
+  // Si no, conserva sus datos normales
+  return {
+    ...prod,
+    stock: nuevoStock,
+  };
+});
 
-        // 4) Limpiar carrito
-        localStorage.removeItem("carrito");
+localStorage.setItem("productosCliente", JSON.stringify(actualizados));
 
-        // 5) Notificar a otras vistas (admin) que hubo actualización de productos
-        try {
-          window.dispatchEvent(new Event("productos-actualizados"));
-        } catch {}
+  // 5️⃣ Limpiar carrito y actualizar vistas
+  localStorage.removeItem("carrito");
+  try {
+    window.dispatchEvent(new Event("productos-actualizados"));
+  } catch {}
 
-        navigate("/compra-exitosa");
-      } else {
+  navigate("/compra-exitosa");
+}
+      else {
         navigate("/compra-fallida");
       }
     }, 2000);
@@ -105,7 +114,7 @@ export default function Checkout() {
 
   return (
     <main className="checkout-container container mt-4">
-      <h2 className="text-center mb-3">💳 Confirmar Compra</h2>
+      <h2 className="text-center mb-3">Confirmar Compra</h2>
       <form onSubmit={handleSubmit} className="shadow p-4 rounded bg-white">
         {error && <p className="text-danger">{error}</p>}
 

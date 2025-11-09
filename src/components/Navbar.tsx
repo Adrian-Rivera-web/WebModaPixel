@@ -1,23 +1,15 @@
-// src/components/Navbar.tsx
 import { Link, useNavigate } from "react-router-dom";
 import { useCarrito } from "../context/CarritoContext";
 import "../assets/css/styles.css";
-import { useState, useEffect } from "react";
-import { getSesion, setSesion } from "../utils/auth";
+import { useSesion } from "../hooks/useSesion";  // ✅ nuevo import
 
 export default function Navbar() {
   const { carrito } = useCarrito();
-  const [usuarioActivo, setUsuarioActivo] = useState<any>(null);
+  const { usuario, cerrarSesion } = useSesion();  // ✅ usamos el hook personalizado
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const sesion = getSesion();
-    if (sesion) setUsuarioActivo(sesion);
-  }, []);
-
   const handleLogout = () => {
-    setSesion(null);            // 🔹 limpia la sesión unificada
-    setUsuarioActivo(null);
+    cerrarSesion(); // ✅ cierra sesión con el hook (centralizado)
     navigate("/login");
   };
 
@@ -31,20 +23,25 @@ export default function Navbar() {
           <li><Link to="/blogs">Blogs</Link></li>
           <li><Link to="/nosotros">Nosotros</Link></li>
           <li><Link to="/contacto">Contacto</Link></li>
-          <li><Link to="/ofertas" style={{ color: "#ff6600", fontWeight: "bold" }}>🔥 Ofertas</Link></li>
+          <li>
+            <Link to="/ofertas" style={{ color: "#ff6600", fontWeight: "bold" }}>
+              🔥 Ofertas
+            </Link>
+          </li>
 
-          {!usuarioActivo && (
+          {!usuario && (
             <>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/registro">Registro</Link></li>
             </>
           )}
 
-          {usuarioActivo && (
+          {usuario && (
             <>
               <li>
                 <span style={{ color: "#ffdd57", fontWeight: "bold" }}>
-                  👤 {usuarioActivo.nombre} {usuarioActivo.tipo === "admin" ? "(Admin)" : ""}
+                  👤 {usuario.nombre}{" "}
+                  {usuario.tipo === "admin" ? "(Admin)" : ""}
                 </span>
               </li>
               <li>

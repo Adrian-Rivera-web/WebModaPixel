@@ -22,7 +22,7 @@ export default function UsuariosEditar() {
   const handleEditar = (index: number) => {
     const nuevoTipo = prompt("Ingrese nuevo tipo (admin / cliente):");
     if (!nuevoTipo || (nuevoTipo !== "admin" && nuevoTipo !== "cliente")) {
-      alert("⚠️ Tipo inválido. Debe ser 'admin' o 'cliente'.");
+      alert("Tipo inválido. Debe ser 'admin' o 'cliente'.");
       return;
     }
 
@@ -32,7 +32,7 @@ export default function UsuariosEditar() {
 
     setUsuarios(actualizados);
     localStorage.setItem("usuarios", JSON.stringify(actualizados));
-    setMensaje(`✅ Tipo de usuario actualizado a ${nuevoTipo}`);
+    setMensaje(`Tipo de usuario actualizado a ${nuevoTipo}`);
   };
 
   // 🗑️ Eliminar usuario
@@ -41,7 +41,7 @@ export default function UsuariosEditar() {
     const actualizados = usuarios.filter((_, i) => i !== index);
     setUsuarios(actualizados);
     localStorage.setItem("usuarios", JSON.stringify(actualizados));
-    setMensaje("🗑️ Usuario eliminado correctamente");
+    setMensaje("Usuario eliminado correctamente");
   };
 
   const usuariosFiltrados = usuarios.filter(
@@ -52,7 +52,7 @@ export default function UsuariosEditar() {
 
   return (
     <section>
-      <h5 className="text-secondary mb-3">✏️ Editar o eliminar usuarios</h5>
+      <h5 className="text-secondary mb-3">Editar o eliminar usuarios</h5>
 
       {mensaje && (
         <div className="alert alert-success text-center">{mensaje}</div>
