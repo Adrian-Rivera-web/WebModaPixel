@@ -58,12 +58,20 @@ export default function AdminPanel() {
           <li><NavLink to="/admin/perfil">Perfil</NavLink></li>
         </ul>
 
+        {/* 👇 Nuevo botón para volver a la tienda */}
+        <button
+          onClick={() => navigate("/")}
+          className="btn btn-secondary w-100 mt-3"
+        >
+          Ir a la tienda
+        </button>
+
         <button
           onClick={() => {
             cerrarSesion(); // ✅ ahora centralizado en el hook
             navigate("/login");
           }}
-          className="btn btn-danger w-100 mt-3"
+          className="btn btn-danger w-100 mt-2"
         >
           Cerrar sesión
         </button>

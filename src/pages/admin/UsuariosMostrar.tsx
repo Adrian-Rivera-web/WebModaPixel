@@ -4,28 +4,71 @@ import UsuariosEditar from "./UsuariosEditar";
 import UsuariosHistorial from "./UsuariosHistorial";
 import "../../assets/css/styles.css";
 
+const API = "http://localhost:8080/api/v1";
+
+type UserType = "ADMIN" | "CLIENTE";
+
 interface Usuario {
+  id: number;
   run: string;
   nombre: string;
   correo: string;
-  tipo: string;
+  tipo: UserType;
 }
 
 export default function UsuariosMostrar() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [busqueda, setBusqueda] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState("");
+
+  const cargarUsuarios = async () => {
+    setError("");
+    setCargando(true);
+
+    try {
+      const token = localStorage.getItem("token") || "";
+
+      const res = await fetch(`${API}/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          setError("No autorizado. Inicia sesión como ADMIN.");
+        } else {
+          setError("No se pudo cargar la lista de usuarios.");
+        }
+        setUsuarios([]);
+        return;
+      }
+
+      const data = (await res.json()) as Usuario[];
+      setUsuarios(data);
+    } catch (e) {
+      setError("Error de conexión con el servidor.");
+      setUsuarios([]);
+    } finally {
+      setCargando(false);
+    }
+  };
 
   useEffect(() => {
-    const guardados = JSON.parse(localStorage.getItem("usuarios") || "[]");
-    setUsuarios(guardados);
+    cargarUsuarios();
   }, []);
 
-  const usuariosFiltrados = usuarios.filter(
-    (u) =>
-      u.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.correo.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.run.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const b = busqueda.toLowerCase();
+    return (
+      u.nombre.toLowerCase().includes(b) ||
+      u.correo.toLowerCase().includes(b) ||
+      u.run.toLowerCase().includes(b)
+    );
+  });
 
   return (
     <section>
@@ -65,19 +108,21 @@ export default function UsuariosMostrar() {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
+
           <button
             className="btn btn-outline-primary"
-            onClick={() =>
-              setUsuarios(JSON.parse(localStorage.getItem("usuarios") || "[]"))
-            }
+            onClick={cargarUsuarios}
+            disabled={cargando}
           >
-            Actualizar lista
+            {cargando ? "Cargando..." : "Actualizar lista"}
           </button>
         </div>
 
+        {error && <p className="text-center text-danger">{error}</p>}
+
         {usuariosFiltrados.length === 0 ? (
           <p className="text-center text-muted">
-            No hay usuarios registrados.
+            {cargando ? "Cargando..." : "No hay usuarios registrados."}
           </p>
         ) : (
           <div className="table-responsive">
@@ -91,20 +136,18 @@ export default function UsuariosMostrar() {
                 </tr>
               </thead>
               <tbody>
-                {usuariosFiltrados.map((u, index) => (
-                  <tr key={index}>
+                {usuariosFiltrados.map((u) => (
+                  <tr key={u.id}>
                     <td>{u.run}</td>
                     <td>{u.nombre}</td>
                     <td>{u.correo}</td>
-                    <td>
+                    <td className="text-center">
                       <span
                         className={`badge ${
-                          u.tipo === "admin"
-                            ? "bg-success"
-                            : "bg-secondary"
+                          u.tipo === "ADMIN" ? "bg-success" : "bg-secondary"
                         }`}
                       >
-                        {u.tipo === "admin" ? "Administrador" : "Cliente"}
+                        {u.tipo === "ADMIN" ? "Administrador" : "Cliente"}
                       </span>
                     </td>
                   </tr>

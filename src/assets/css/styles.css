@@ -73,8 +73,8 @@ header nav a:hover { color: #ffdd57; }
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: auto;
+    width: auto;
+    height: 100px;
 }
 .navbar-container nav { display: flex; justify-content: center; width: 100%; }
 .navbar-container nav ul { list-style: none; display: flex; gap: 15px; }

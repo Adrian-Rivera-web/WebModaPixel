@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Producto } from "../../data/productos";
 
+// 👇 Bandera para usar backend o solo localStorage
+const USE_API = String(import.meta.env.VITE_USE_API).toLowerCase() === "true";
+// admin:admin123 en Base64
+const ADMIN_AUTH_HEADER = "Basic YWRtaW46YWRtaW4xMjM=";
+
 export default function ProductosNuevo() {
   const [mensaje, setMensaje] = useState("");
   const [imagenPreview, setImagenPreview] = useState<string | null>(null);
@@ -25,22 +30,66 @@ export default function ProductosNuevo() {
     reader.readAsDataURL(file);
   };
 
-  const agregarProducto = (e: React.FormEvent<HTMLFormElement>) => {
+  const agregarProducto = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const nombre = (form.elements.namedItem("nombre") as HTMLInputElement).value.trim();
-    const precio = parseFloat((form.elements.namedItem("precio") as HTMLInputElement).value);
-    const stock = parseInt((form.elements.namedItem("stock") as HTMLInputElement).value);
-    const categoria = (form.elements.namedItem("categoria") as HTMLSelectElement).value;
+    const precio = parseFloat(
+      (form.elements.namedItem("precio") as HTMLInputElement).value
+    );
+    const stock = parseInt(
+      (form.elements.namedItem("stock") as HTMLInputElement).value
+    );
+    const categoria = (form.elements.namedItem("categoria") as HTMLSelectElement)
+      .value;
 
     if (!nombre || isNaN(precio) || isNaN(stock) || !categoria) {
       setMensaje("⚠️ Completa todos los campos correctamente");
       return;
     }
 
-    const productosGuardados = JSON.parse(localStorage.getItem("productosCliente") || "[]");
+    // ✅ MODO BACKEND (Spring Boot + MySQL)
+    if (USE_API) {
+      try {
+        const baseUrl =
+          (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:8080";
 
-    // 🆕 Se agrega la fecha y el campo oferta
+        const resp = await fetch(`${baseUrl}/api/v1/products`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: ADMIN_AUTH_HEADER, // admin:admin123
+          },
+          body: JSON.stringify({
+            name: nombre,
+            description: "Nuevo producto agregado por administrador",
+            price: precio,
+            stock: stock,
+            category: categoria, // 👈 AHORA también enviamos la categoría
+          }),
+        });
+
+        if (!resp.ok) {
+          throw new Error("Error al crear producto en el backend");
+        }
+
+        await resp.json();
+
+        setMensaje("✅ Producto agregado correctamente en el backend");
+        form.reset();
+        setImagenPreview(null);
+      } catch (err) {
+        console.error(err);
+        setMensaje("❌ No se pudo crear el producto en el backend");
+      }
+      return; // no seguimos al modo local
+    }
+
+    // ✅ MODO LOCAL (como lo tenías antes)
+    const productosGuardados = JSON.parse(
+      localStorage.getItem("productosCliente") || "[]"
+    );
+
     const nuevo: Producto = {
       id: productosGuardados.length + 1,
       nombre,
@@ -54,10 +103,13 @@ export default function ProductosNuevo() {
       fechaAgregado: new Date().toISOString(), // ✅ Fecha actual
     };
 
-    localStorage.setItem("productosCliente", JSON.stringify([...productosGuardados, nuevo]));
+    localStorage.setItem(
+      "productosCliente",
+      JSON.stringify([...productosGuardados, nuevo])
+    );
     form.reset();
     setImagenPreview(null);
-    setMensaje("✅ Producto agregado correctamente");
+    setMensaje("✅ Producto agregado correctamente (modo local)");
   };
 
   return (

@@ -11,16 +11,14 @@ export default function ProductoCard({ producto, onAgregar }: Props) {
     ? Math.round(producto.precio * (1 - (producto.descuento ?? 0) / 100))
     : producto.precio;
 
-  const sinStock = (producto.stock ?? 0) <= 0; // 🔹 Detecta si no hay unidades
+  const sinStock = (producto.stock ?? 0) <= 0;
 
   return (
     <div className="producto-card" style={{ position: "relative" }}>
       <img src={producto.imagen} alt={producto.nombre} />
 
-      {/* 🔥 Etiqueta de oferta */}
       {tieneOferta && <span className="badge-oferta">🔥 En oferta</span>}
 
-      {/* 🚫 Etiqueta si no hay stock */}
       {sinStock && (
         <span className="badge-sin-stock">🔴 Stock no disponible</span>
       )}
@@ -28,7 +26,6 @@ export default function ProductoCard({ producto, onAgregar }: Props) {
       <h3>{producto.nombre}</h3>
       <p className="categoria">{producto.categoria}</p>
 
-      {/* 💸 Precios */}
       {tieneOferta ? (
         <p className="precio">
           <span className="precio-anterior">${producto.precio}</span>{" "}
@@ -39,7 +36,6 @@ export default function ProductoCard({ producto, onAgregar }: Props) {
         <p className="precio-normal">${producto.precio}</p>
       )}
 
-      {/* 🛒 Botón (bloqueado si no hay stock) */}
       <button
         onClick={() => onAgregar(producto)}
         disabled={sinStock}

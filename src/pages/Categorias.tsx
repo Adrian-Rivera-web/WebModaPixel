@@ -1,17 +1,36 @@
 import { useState } from "react";
-import { productos } from "../data/productos";
 import type { Producto } from "../data/productos";
+import { productos as productosBase } from "../data/productos";
 import ProductoCard from "../components/ProductoCard";
+import { useCarrito } from "../context/CarritoContext";
+import { cargarCategorias } from "../data/categorias";
 
 export default function Categorias() {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("");
+  const { agregarProducto } = useCarrito();
+  const [categoriaSeleccionada, setCategoriaSeleccionada] =
+    useState<string>("");
 
-  // Obtener todas las categorías únicas (basado en los productos)
-  const categorias = Array.from(new Set(productos.map(p => p.categoria))).filter(c => c);
+  const productosCliente = JSON.parse(
+    localStorage.getItem("productosCliente") || "[]"
+  );
+  const productos: Producto[] =
+    Array.isArray(productosCliente) && productosCliente.length > 0
+      ? productosCliente
+      : productosBase;
 
-  // Filtrar productos según la categoría seleccionada
+  // Categorías derivadas de los productos (backup)
+  const categoriasDeProductos = Array.from(
+    new Set(productos.map((p) => p.categoria).filter(Boolean))
+  ) as string[];
+
+  // Categorías que vienen del admin (módulo categorias.ts)
+  const categoriasAdmin = cargarCategorias().map((c) => c.nombre);
+
+  const categorias: string[] =
+    categoriasAdmin.length > 0 ? categoriasAdmin : categoriasDeProductos;
+
   const productosFiltrados = categoriaSeleccionada
-    ? productos.filter(p => p.categoria === categoriaSeleccionada)
+    ? productos.filter((p) => p.categoria === categoriaSeleccionada)
     : productos;
 
   return (
@@ -40,10 +59,22 @@ export default function Categorias() {
       </div>
 
       {/* Lista de productos */}
-      <section id="productos" style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+      <section
+        id="productos"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "20px",
+          justifyContent: "center",
+        }}
+      >
         {productosFiltrados.length > 0 ? (
           productosFiltrados.map((p: Producto) => (
-            <ProductoCard key={p.id} producto={p} onAgregar={() => {}} />
+            <ProductoCard
+              key={p.id}
+              producto={p}
+              onAgregar={agregarProducto}
+            />
           ))
         ) : (
           <p>No hay productos disponibles en esta categoría.</p>

@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { Producto } from "../data/productos";
-import { useLocalStorage } from "../hooks/useLocalStorage"; // ✅ usamos el nuevo hook
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 interface ItemCarrito extends Producto {
   cantidad: number;
@@ -11,26 +11,41 @@ interface CarritoContextType {
   agregarProducto: (producto: Producto) => void;
   eliminarProducto: (id: number) => void;
   vaciarCarrito: () => void;
+  actualizarCantidad: (id: number, cantidad: number) => void;
   total: number;
 }
 
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
 
 export function CarritoProvider({ children }: { children: ReactNode }) {
-  // ✅ reemplazamos useState + useEffect por useLocalStorage
   const [carrito, setCarrito] = useLocalStorage<ItemCarrito[]>("carrito", []);
 
-  // 🛒 Agregar producto (si existe, suma cantidad)
+  // 🛒 Agregar producto con control de stock
   const agregarProducto = (producto: Producto) => {
     setCarrito((prev) => {
       const existe = prev.find((p) => p.id === producto.id);
+      const stockDisponible = producto.stock ?? 0;
+
+      // Si ya existe en el carrito
       if (existe) {
+        if (existe.cantidad >= stockDisponible) {
+          alert(
+            `⚠️ Solo hay ${stockDisponible} unidades disponibles de "${producto.nombre}".`
+          );
+          return prev; // no cambiamos el carrito
+        }
         return prev.map((p) =>
           p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
         );
-      } else {
-        return [...prev, { ...producto, cantidad: 1 }];
       }
+
+      // Si no existe aún en el carrito
+      if (stockDisponible <= 0) {
+        alert(`⚠️ "${producto.nombre}" no tiene stock disponible.`);
+        return prev;
+      }
+
+      return [...prev, { ...producto, cantidad: 1 }];
     });
   };
 
@@ -44,19 +59,41 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     setCarrito([]);
   };
 
-  // 💰 Calcular total del carrito
-  const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+  // ➕➖ Cambiar cantidad (el control de stock extra ya lo haces en la página Carrito)
+  const actualizarCantidad = (id: number, cantidad: number) => {
+    if (cantidad <= 0) {
+      return setCarrito((prev) => prev.filter((p) => p.id !== id));
+    }
+    setCarrito((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, cantidad } : p))
+    );
+  };
+
+  // 💰 Total del carrito (considerando ofertas)
+  const total = carrito.reduce((acc, p) => {
+    const tieneOferta = p.oferta && (p.descuento ?? 0) > 0;
+    const precioFinal = tieneOferta
+      ? Math.round(p.precio * (1 - (p.descuento ?? 0) / 100))
+      : p.precio;
+    return acc + precioFinal * p.cantidad;
+  }, 0);
 
   return (
     <CarritoContext.Provider
-      value={{ carrito, agregarProducto, eliminarProducto, vaciarCarrito, total }}
+      value={{
+        carrito,
+        agregarProducto,
+        eliminarProducto,
+        vaciarCarrito,
+        actualizarCantidad,
+        total,
+      }}
     >
       {children}
     </CarritoContext.Provider>
   );
 }
 
-// 🔁 Hook personalizado para usar el contexto en cualquier componente
 export function useCarrito() {
   const context = useContext(CarritoContext);
   if (!context)

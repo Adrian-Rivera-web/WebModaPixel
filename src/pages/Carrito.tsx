@@ -1,75 +1,41 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Producto } from "../data/productos";
 import "../assets/css/carrito.css";
-
-interface ProductoConCantidad extends Producto {
-  cantidad: number;
-}
+import { useCarrito } from "../context/CarritoContext";
 
 export default function Carrito() {
-  const [carrito, setCarrito] = useState<ProductoConCantidad[]>([]);
-  const [total, setTotal] = useState(0);
+  const {
+    carrito,
+    eliminarProducto,
+    vaciarCarrito,
+    actualizarCantidad,
+    total,
+  } = useCarrito();
   const navigate = useNavigate();
 
-  // 🔹 Cargar carrito desde localStorage
-  useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem("carrito") || "[]");
-    setCarrito(carritoGuardado);
-    calcularTotal(carritoGuardado);
-  }, []);
-
-  // 💰 Calcular total (considera ofertas)
-  const calcularTotal = (carritoActual: ProductoConCantidad[]) => {
-    const totalCalculado = carritoActual.reduce((sum, item) => {
-      const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
-      const precioFinal = tieneOferta
-        ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
-        : item.precio;
-      return sum + precioFinal * item.cantidad;
-    }, 0);
-
-    setTotal(totalCalculado);
-  };
-
-  // 🗑️ Eliminar un producto
-  const eliminarDelCarrito = (id: number) => {
-    const nuevoCarrito = carrito.filter((item) => item.id !== id);
-    setCarrito(nuevoCarrito);
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-    calcularTotal(nuevoCarrito);
-  };
-
-  // ➕➖ Cambiar cantidad (con control de stock)
-  const actualizarCantidad = (id: number, nuevaCantidad: number) => {
-    if (nuevaCantidad <= 0) {
-      eliminarDelCarrito(id);
-      return;
-    }
-
-    const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
-    const productoOriginal = productosCliente.find((p: any) => p.id === id);
-    const stockDisponible = productoOriginal?.stock ?? 0;
-
-    const productoCarrito = carrito.find((p) => p.id === id);
-    if (productoCarrito && nuevaCantidad > stockDisponible) {
-      alert(`No puedes agregar más unidades. Solo hay ${stockDisponible} disponibles en stock.`);
-      return;
-    }
-
-    const nuevoCarrito = carrito.map((item) =>
-      item.id === id ? { ...item, cantidad: nuevaCantidad } : item
+  // 🔍 Obtener stock desde productosCliente (para respetar stock del admin)
+  const getStockDisponible = (id: number) => {
+    const productosCliente = JSON.parse(
+      localStorage.getItem("productosCliente") || "[]"
     );
-    setCarrito(nuevoCarrito);
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-    calcularTotal(nuevoCarrito);
+    const productoOriginal = productosCliente.find((p: any) => p.id === id);
+    return productoOriginal?.stock ?? 0;
   };
 
-  // 🧹 Vaciar carrito
-  const vaciarCarrito = () => {
-    localStorage.removeItem("carrito");
-    setCarrito([]);
-    setTotal(0);
+  const cambiarCantidadConStock = (id: number, nuevaCantidad: number) => {
+    if (nuevaCantidad <= 0) {
+      eliminarProducto(id);
+      return;
+    }
+
+    const stockDisponible = getStockDisponible(id);
+    if (nuevaCantidad > stockDisponible) {
+      alert(
+        `No puedes agregar más unidades. Solo hay ${stockDisponible} disponibles en stock.`
+      );
+      return;
+    }
+
+    actualizarCantidad(id, nuevaCantidad);
   };
 
   return (
@@ -96,7 +62,9 @@ export default function Carrito() {
               {carrito.map((item) => {
                 const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
                 const precioFinal = tieneOferta
-                  ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
+                  ? Math.round(
+                      item.precio * (1 - (item.descuento ?? 0) / 100)
+                    )
                   : item.precio;
                 const subtotal = precioFinal * item.cantidad;
 
@@ -107,15 +75,24 @@ export default function Carrito() {
                     </td>
                     <td>{item.nombre}</td>
 
-                    {/* 💸 Precio original */}
                     <td>
                       {tieneOferta ? (
                         <>
-                          <span style={{ textDecoration: "line-through", color: "#888" }}>
+                          <span
+                            style={{
+                              textDecoration: "line-through",
+                              color: "#888",
+                            }}
+                          >
                             ${item.precio}
                           </span>
                           <br />
-                          <span style={{ color: "#e63946", fontWeight: "bold" }}>
+                          <span
+                            style={{
+                              color: "#e63946",
+                              fontWeight: "bold",
+                            }}
+                          >
                             ${precioFinal}
                           </span>
                         </>
@@ -124,10 +101,11 @@ export default function Carrito() {
                       )}
                     </td>
 
-                    {/* 🏷️ Nueva columna de descuento */}
                     <td>
                       {tieneOferta ? (
-                        <span style={{ color: "#2a9d8f", fontWeight: "bold" }}>
+                        <span
+                          style={{ color: "#2a9d8f", fontWeight: "bold" }}
+                        >
                           -{item.descuento}%
                         </span>
                       ) : (
@@ -135,25 +113,39 @@ export default function Carrito() {
                       )}
                     </td>
 
-                    {/* ➕➖ Cantidad */}
                     <td>
                       <div className="cantidad-controls">
-                        <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)}>
+                        <button
+                          onClick={() =>
+                            cambiarCantidadConStock(
+                              item.id,
+                              item.cantidad - 1
+                            )
+                          }
+                        >
                           -
                         </button>
                         <span>{item.cantidad}</span>
-                        <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}>
+                        <button
+                          onClick={() =>
+                            cambiarCantidadConStock(
+                              item.id,
+                              item.cantidad + 1
+                            )
+                          }
+                        >
                           +
                         </button>
                       </div>
                     </td>
 
-                    {/* 💰 Subtotal */}
                     <td>${subtotal}</td>
 
-                    {/* 🗑️ Eliminar */}
                     <td>
-                      <button className="btn-eliminar" onClick={() => eliminarDelCarrito(item.id)}>
+                      <button
+                        className="btn-eliminar"
+                        onClick={() => eliminarProducto(item.id)}
+                      >
                         Eliminar
                       </button>
                     </td>
@@ -166,8 +158,12 @@ export default function Carrito() {
           <section className="carrito-total">
             <h3>Total: ${total}</h3>
             <button onClick={vaciarCarrito}>Vaciar carrito</button>
-            <button onClick={() => navigate("/productos")}>Seguir comprando</button>
-            <button onClick={() => navigate("/checkout")}>Proceder al pago</button>
+            <button onClick={() => navigate("/productos")}>
+              Seguir comprando
+            </button>
+            <button onClick={() => navigate("/checkout")}>
+              Proceder al pago
+            </button>
           </section>
         </>
       )}

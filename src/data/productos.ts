@@ -7,9 +7,9 @@ export interface Producto {
   descripcion: string;
   stock: number;
   categoria?: string;
-  oferta?: boolean;     // 👈 nuevo
+  oferta?: boolean;
   descuento?: number;
-  fechaAgregado?: string; // 👈 Importante para el filtrado
+  fechaAgregado?: string;
 }
 
 export const productos: Producto[] = [

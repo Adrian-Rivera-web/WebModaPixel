@@ -1,22 +1,26 @@
 import { useParams } from "react-router-dom";
-import { productos } from "../data/productos";
-import type { Producto } from "../data/productos";
 import "../assets/css/styles.css";
+import type { Producto } from "../data/productos";
+import { useProductos } from "../hooks/useProductos";
+import { useCarrito } from "../context/CarritoContext";
 
 export default function DetalleProducto() {
   const { id } = useParams<{ id: string }>();
-  const producto = productos.find((p) => p.id === Number(id));
+  const { productos } = useProductos();
+  const { agregarProducto } = useCarrito();
 
-  const agregarAlCarrito = (p: Producto) => {
-    const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-    carrito.push(p);
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    alert(`${p.nombre} fue añadido al carrito 🛒`);
-  };
+  const producto: Producto | undefined = productos.find(
+    (p) => p.id === Number(id)
+  );
 
   if (!producto) {
     return <p>❌ Producto no encontrado</p>;
   }
+
+  const tieneOferta = producto.oferta && (producto.descuento ?? 0) > 0;
+  const precioFinal = tieneOferta
+    ? Math.round(producto.precio * (1 - (producto.descuento ?? 0) / 100))
+    : producto.precio;
 
   return (
     <main className="detalle-container">
@@ -30,12 +34,33 @@ export default function DetalleProducto() {
         />
         <div className="detalle-info">
           <p>
-            <strong>Precio:</strong> ${producto.precio}
+            <strong>Precio:</strong>{" "}
+            {tieneOferta ? (
+              <>
+                <span
+                  style={{
+                    textDecoration: "line-through",
+                    color: "#888",
+                    marginRight: "8px",
+                  }}
+                >
+                  ${producto.precio}
+                </span>
+                <span style={{ fontWeight: "bold", color: "#e63946" }}>
+                  ${precioFinal}
+                </span>
+                <span style={{ marginLeft: 4 }}>(-{producto.descuento}%)</span>
+              </>
+            ) : (
+              <>${producto.precio}</>
+            )}
           </p>
           <p>
             <strong>Descripción:</strong> {producto.descripcion}
           </p>
-          <button onClick={() => agregarAlCarrito(producto)}>Añadir al carrito</button>
+          <button onClick={() => agregarProducto(producto)}>
+            Añadir al carrito
+          </button>
         </div>
       </div>
     </main>

@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react";
-
-interface Categoria {
-  id: number;
-  nombre: string;
-  descripcion: string;
-}
+import {
+  type Categoria,
+  cargarCategorias,
+  guardarCategorias,
+} from "../../data/categorias";
 
 export default function CategoriasEditar() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [mensaje, setMensaje] = useState("");
 
+  // 🔹 Cargar categorías desde el módulo centralizado
   useEffect(() => {
-    const guardadas = JSON.parse(localStorage.getItem("categorias") || "[]");
-    setCategorias(guardadas);
+    const lista = cargarCategorias();
+    setCategorias(lista);
   }, []);
-
-  const guardarCategorias = (nuevas: Categoria[]) => {
-    setCategorias(nuevas);
-    localStorage.setItem("categorias", JSON.stringify(nuevas));
-  };
 
   const eliminarCategoria = (id: number) => {
     if (!confirm("¿Seguro que deseas eliminar esta categoría?")) return;
+
     const actualizadas = categorias.filter((c) => c.id !== id);
+    setCategorias(actualizadas);
     guardarCategorias(actualizadas);
-    setMensaje("Categoría eliminada correctamente.");
+
+    setMensaje("✅ Categoría eliminada correctamente.");
+    setTimeout(() => setMensaje(""), 2500);
   };
 
   return (

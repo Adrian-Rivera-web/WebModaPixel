@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/styles.css";
+import { useCarrito } from "../context/CarritoContext";
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { carrito, vaciarCarrito } = useCarrito();
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -17,7 +19,9 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -37,76 +41,86 @@ export default function Checkout() {
       const exito = Math.random() > 0.3; // 70% éxito
 
       if (exito) {
-  // 1️⃣ Leer carrito y usuario actual
-  const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-  const usuarioActual = JSON.parse(localStorage.getItem("usuarioActual") || "null");
+        // 1️⃣ Leer usuario actual
+        const usuarioActual = JSON.parse(
+          localStorage.getItem("usuarioActual") || "null"
+        );
 
-  // 2️⃣ Crear la compra con todos los datos necesarios
-  const nuevaCompra = {
-    id: Date.now(),
-    comprador: usuarioActual ? usuarioActual.nombre : formData.nombre,
-    correo: usuarioActual ? usuarioActual.correo : formData.correo,
-    usuario: usuarioActual ? usuarioActual.nombre : "Invitado", // 👈 para los reportes
-    fecha: new Date().toISOString(),
-    total: carrito.reduce((sum: number, item: any) => {
-      const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
-      const precioFinal = tieneOferta
-        ? Math.round(item.precio * (1 - (item.descuento ?? 0) / 100))
-        : item.precio;
-      return sum + precioFinal * item.cantidad;
-    }, 0),
-    productos: carrito.map((p: any) => ({
-      id: p.id,
-      nombre: p.nombre,
-      categoria: p.categoria || "Sin categoría", // 👈 evita undefined en reportes
-      precio: p.precio,
-      descuento: p.descuento ?? 0,
-      oferta: !!p.oferta,
-      cantidad: p.cantidad,
-    })),
-  };
+        // 2️⃣ Crear la compra con todos los datos necesarios
+        const nuevaCompra = {
+          id: Date.now(),
+          comprador: usuarioActual ? usuarioActual.nombre : formData.nombre,
+          correo: usuarioActual ? usuarioActual.correo : formData.correo,
+          usuario: usuarioActual ? usuarioActual.nombre : "Invitado",
+          fecha: new Date().toISOString(),
+          total: carrito.reduce((sum, item) => {
+            const tieneOferta = item.oferta && (item.descuento ?? 0) > 0;
+            const precioFinal = tieneOferta
+              ? Math.round(
+                  item.precio * (1 - (item.descuento ?? 0) / 100)
+                )
+              : item.precio;
+            return sum + precioFinal * item.cantidad;
+          }, 0),
+          productos: carrito.map((p) => ({
+            id: p.id,
+            nombre: p.nombre,
+            categoria: p.categoria || "Sin categoría",
+            precio: p.precio,
+            descuento: p.descuento ?? 0,
+            oferta: !!p.oferta,
+            cantidad: p.cantidad,
+          })),
+        };
 
-  // 3️⃣ Guardar la compra
-  const compras = JSON.parse(localStorage.getItem("compras") || "[]");
-  compras.push(nuevaCompra);
-  localStorage.setItem("compras", JSON.stringify(compras));
+        // 3️⃣ Guardar la compra
+        const compras = JSON.parse(
+          localStorage.getItem("compras") || "[]"
+        );
+        compras.push(nuevaCompra);
+        localStorage.setItem("compras", JSON.stringify(compras));
 
-  // 4️⃣ Restar stock en productosCliente
-  const productosCliente = JSON.parse(localStorage.getItem("productosCliente") || "[]");
-const actualizados = productosCliente.map((prod: any) => {
-  const enCarrito = carrito.find((c: any) => c.id === prod.id);
-  if (!enCarrito) return prod;
+        // 4️⃣ Restar stock en productosCliente
+        const productosCliente = JSON.parse(
+          localStorage.getItem("productosCliente") || "[]"
+        );
+        const actualizados = productosCliente.map((prod: any) => {
+          const enCarrito = carrito.find((c) => c.id === prod.id);
+          if (!enCarrito) return prod;
 
-  const nuevoStock = Math.max((prod.stock ?? 0) - enCarrito.cantidad, 0);
+          const nuevoStock = Math.max(
+            (prod.stock ?? 0) - enCarrito.cantidad,
+            0
+          );
 
-  // Si el stock llega a 0, desactiva oferta y descuento
-  if (nuevoStock === 0) {
-    return {
-      ...prod,
-      stock: 0,
-      oferta: false,
-      descuento: 0,
-    };
-  }
+          if (nuevoStock === 0) {
+            return {
+              ...prod,
+              stock: 0,
+              oferta: false,
+              descuento: 0,
+            };
+          }
 
-  // Si no, conserva sus datos normales
-  return {
-    ...prod,
-    stock: nuevoStock,
-  };
-});
+          return {
+            ...prod,
+            stock: nuevoStock,
+          };
+        });
 
-localStorage.setItem("productosCliente", JSON.stringify(actualizados));
+        localStorage.setItem(
+          "productosCliente",
+          JSON.stringify(actualizados)
+        );
 
-  // 5️⃣ Limpiar carrito y actualizar vistas
-  localStorage.removeItem("carrito");
-  try {
-    window.dispatchEvent(new Event("productos-actualizados"));
-  } catch {}
+        // 5️⃣ Limpiar carrito y actualizar vistas
+        vaciarCarrito(); // ✅ limpia contexto + localStorage
+        try {
+          window.dispatchEvent(new Event("productos-actualizados"));
+        } catch {}
 
-  navigate("/compra-exitosa");
-}
-      else {
+        navigate("/compra-exitosa");
+      } else {
         navigate("/compra-fallida");
       }
     }, 2000);

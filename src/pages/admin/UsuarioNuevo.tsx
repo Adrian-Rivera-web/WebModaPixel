@@ -1,19 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-interface Usuario {
+const API = "http://localhost:8080/api/v1";
+
+interface FormUsuario {
   run: string;
   nombre: string;
   correo: string;
-  tipo: string;
-  password: string; // 👈 nuevo campo
+  tipo: "cliente" | "admin"; // UI
+  password: string;
 }
 
 export default function UsuarioNuevo() {
-  const [usuarios, setUsuarios] = useState<Usuario[]>(
-    JSON.parse(localStorage.getItem("usuarios") || "[]")
-  );
-
-  const [form, setForm] = useState<Usuario>({
+  const [form, setForm] = useState<FormUsuario>({
     run: "",
     nombre: "",
     correo: "",
@@ -22,34 +20,81 @@ export default function UsuarioNuevo() {
   });
 
   const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value } as FormUsuario);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMensaje("");
 
     if (!form.run || !form.nombre || !form.correo || !form.password) {
-      setMensaje("Todos los campos son obligatorios");
+      setMensaje("⚠️ Todos los campos son obligatorios");
       return;
     }
 
-    const nuevos = [...usuarios, form];
-    setUsuarios(nuevos);
-    localStorage.setItem("usuarios", JSON.stringify(nuevos));
+    const token = localStorage.getItem("token") || "";
+    if (!token) {
+      setMensaje("⚠️ No hay sesión activa (token). Inicia sesión como ADMIN.");
+      return;
+    }
 
-    setMensaje("Usuario agregado correctamente");
+    // ✅ Backend espera "ADMIN" | "CLIENTE"
+    const payload = {
+      run: form.run,
+      nombre: form.nombre,
+      correo: form.correo,
+      password: form.password,
+      tipo: form.tipo === "admin" ? "ADMIN" : "CLIENTE",
+    };
 
-    setForm({
-      run: "",
-      nombre: "",
-      correo: "",
-      tipo: "cliente",
-      password: "",
-    });
+    try {
+      setCargando(true);
+
+      const res = await fetch(`${API}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        if (res.status === 400) {
+          setMensaje("⚠️ No se pudo crear: correo ya existe o datos inválidos.");
+          return;
+        }
+        if (res.status === 401) {
+          setMensaje("⚠️ Token inválido o vencido. Vuelve a iniciar sesión.");
+          return;
+        }
+        if (res.status === 403) {
+          setMensaje("⚠️ No autorizado. Debes iniciar sesión como ADMIN.");
+          return;
+        }
+        setMensaje("⚠️ Error inesperado al crear el usuario.");
+        return;
+      }
+
+      setMensaje("✅ Usuario agregado correctamente (guardado en BD)");
+
+      setForm({
+        run: "",
+        nombre: "",
+        correo: "",
+        tipo: "cliente",
+        password: "",
+      });
+    } catch (error) {
+      setMensaje("⚠️ Error de conexión con el servidor");
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -136,8 +181,8 @@ export default function UsuarioNuevo() {
         </div>
 
         <div className="text-center mt-4">
-          <button className="btn btn-primary px-4 fw-semibold">
-            Agregar usuario
+          <button className="btn btn-primary px-4 fw-semibold" disabled={cargando}>
+            {cargando ? "Creando..." : "Agregar usuario"}
           </button>
         </div>
       </form>

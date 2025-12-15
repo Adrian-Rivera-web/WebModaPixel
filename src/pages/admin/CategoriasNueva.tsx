@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-
-interface Categoria {
-  id: number;
-  nombre: string;
-  descripcion: string;
-}
+import {
+  type Categoria,
+  cargarCategorias,
+  guardarCategorias,
+} from "../../data/categorias";
 
 export default function CategoriasNueva() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -12,34 +11,54 @@ export default function CategoriasNueva() {
   const [descripcion, setDescripcion] = useState("");
   const [mensaje, setMensaje] = useState("");
 
+  // 🔹 Cargar categorías desde el módulo centralizado
   useEffect(() => {
-    const guardadas = JSON.parse(localStorage.getItem("categorias") || "[]");
-    setCategorias(guardadas);
+    const lista = cargarCategorias();
+    setCategorias(lista);
   }, []);
-
-  const guardarCategorias = (nuevas: Categoria[]) => {
-    setCategorias(nuevas);
-    localStorage.setItem("categorias", JSON.stringify(nuevas));
-  };
 
   const agregarCategoria = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!nombre.trim()) {
-      setMensaje("El nombre de la categoría es obligatorio.");
+    const nombreLimpio = nombre.trim();
+    const descripcionLimpia = descripcion.trim();
+
+    if (!nombreLimpio) {
+      setMensaje("⚠️ El nombre de la categoría es obligatorio.");
       return;
     }
 
-    const nueva: Categoria = {
-      id: categorias.length + 1,
-      nombre: nombre.trim(),
-      descripcion: descripcion.trim(),
-    };
+    // ❌ Evitar nombres repetidos (ignorando mayúsculas/minúsculas)
+    const existe = categorias.some(
+      (c) => c.nombre.toLowerCase() === nombreLimpio.toLowerCase()
+    );
+    if (existe) {
+      setMensaje("⚠️ Ya existe una categoría con ese nombre.");
+      return;
+    }
 
-    guardarCategorias([...categorias, nueva]);
+    const nuevoId =
+  categorias.length > 0
+    ? Math.max(...categorias.map((c) => c.id)) + 1
+    : 1;
+
+const nueva: Categoria = {
+  id: nuevoId,
+  nombre: nombreLimpio,
+  descripcion: descripcionLimpia,
+};
+
+
+    const nuevasCategorias = [...categorias, nueva];
+
+    // 🔹 Actualizamos estado y localStorage usando la función compartida
+    setCategorias(nuevasCategorias);
+    guardarCategorias(nuevasCategorias);
+
     setNombre("");
     setDescripcion("");
-    setMensaje("Categoría agregada correctamente.");
+    setMensaje("✅ Categoría agregada correctamente.");
+    setTimeout(() => setMensaje(""), 2500);
   };
 
   return (
@@ -67,7 +86,9 @@ export default function CategoriasNueva() {
       >
         <div className="row g-4 align-items-end">
           <div className="col-md-5">
-            <label className="form-label fw-semibold">Nombre de la categoría</label>
+            <label className="form-label fw-semibold">
+              Nombre de la categoría
+            </label>
             <input
               type="text"
               value={nombre}

@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
-import type { Producto } from "../data/productos";
 import "../assets/css/styles.css";
+import type { Producto } from "../data/productos";
+import { productos as productosBase } from "../data/productos";
+import { useCarrito } from "../context/CarritoContext";
 
 export default function Ofertas() {
   const [productos, setProductos] = useState<Producto[]>([]);
+  const { agregarProducto } = useCarrito();
 
   useEffect(() => {
-    // 🧩 Cargar desde localStorage (productos actualizados por admin)
-    const guardados = JSON.parse(localStorage.getItem("productosCliente") || "[]");
-    setProductos(guardados);
+    const guardados = JSON.parse(
+      localStorage.getItem("productosCliente") || "[]"
+    );
+
+    if (Array.isArray(guardados) && guardados.length > 0) {
+      setProductos(guardados);
+    } else {
+      // Si aún no hay productosCliente, usamos los productos base
+      setProductos(productosBase);
+    }
   }, []);
 
   // 🔍 Filtrar solo productos con oferta activa
-  const productosEnOferta = productos.filter((p) => p.oferta && (p.descuento ?? 0) > 0);
+  const productosEnOferta = productos.filter(
+    (p) => p.oferta && (p.descuento ?? 0) > 0
+  );
 
   return (
     <main className="ofertas-container">
@@ -22,7 +34,9 @@ export default function Ofertas() {
       {productosEnOferta.length > 0 ? (
         <section className="ofertas-grid">
           {productosEnOferta.map((p) => {
-            const precioFinal = Math.round(p.precio * (1 - (p.descuento ?? 0) / 100));
+            const precioFinal = Math.round(
+              p.precio * (1 - (p.descuento ?? 0) / 100)
+            );
             return (
               <div key={p.id} className="producto-oferta">
                 <img src={p.imagen} alt={p.nombre} />
@@ -31,6 +45,9 @@ export default function Ofertas() {
                 <p className="precio-anterior">Antes: ${p.precio}</p>
                 <p className="precio-oferta">Ahora: ${precioFinal}</p>
                 <p className="descuento">Descuento: -{p.descuento}%</p>
+                <button onClick={() => agregarProducto(p)}>
+                  🛒 Añadir al carrito
+                </button>
               </div>
             );
           })}

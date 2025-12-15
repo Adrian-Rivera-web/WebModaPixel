@@ -1,8 +1,9 @@
 // src/pages/Registro.tsx
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/styles.css";
-import { getUsuarios, saveUsuarios, type Usuario } from "../utils/auth";
+
+const API = "http://localhost:8080/api/v1";
 
 export default function Registro() {
   const navigate = useNavigate();
@@ -18,32 +19,37 @@ export default function Registro() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMensaje("");
 
     if (!form.run || !form.nombre || !form.correo || !form.password) {
       setMensaje("Todos los campos son obligatorios");
       return;
     }
 
-    const usuarios = getUsuarios();
-    const existe = usuarios.some((u) => u.correo === form.correo);
-    if (existe) {
-      setMensaje("Este correo ya está registrado");
-      return;
+    try {
+      const res = await fetch(`${API}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        // tu backend devuelve 400 si el correo ya existe (como lo hicimos)
+        if (res.status === 400) {
+          setMensaje("Este correo ya está registrado");
+          return;
+        }
+        setMensaje("No se pudo registrar. Intenta nuevamente");
+        return;
+      }
+
+      setMensaje("Registro exitoso, ahora puedes iniciar sesión");
+      setTimeout(() => navigate("/login"), 1200);
+    } catch (error) {
+      setMensaje("Error de conexión con el servidor");
     }
-
-    const nuevoUsuario: Usuario = {
-      run: form.run,
-      nombre: form.nombre,
-      correo: form.correo,
-      password: form.password,
-      tipo: "cliente", // 👈 por defecto
-    };
-
-    saveUsuarios([...usuarios, nuevoUsuario]);
-    setMensaje("✅ Registro exitoso, ahora puedes iniciar sesión");
-    setTimeout(() => navigate("/login"), 1200);
   };
 
   return (
@@ -55,7 +61,16 @@ export default function Registro() {
         style={{ maxWidth: "420px" }}
       >
         {mensaje && (
-          <p className={`text-center ${mensaje.includes("⚠️") ? "text-danger" : "text-success"}`}>
+          <p
+            className={`text-center ${
+              mensaje.toLowerCase().includes("error") ||
+              mensaje.toLowerCase().includes("no se pudo") ||
+              mensaje.toLowerCase().includes("obligatorios") ||
+              mensaje.toLowerCase().includes("ya está")
+                ? "text-danger"
+                : "text-success"
+            }`}
+          >
             {mensaje}
           </p>
         )}
